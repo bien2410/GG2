@@ -9,39 +9,35 @@ package nhom2.gg2;
  *
  * @author ADMIN
  */
+import entity.*;
 import java.awt.*;
 import javax.swing.*;
+import tile.*;
 public class GamePanel extends JPanel implements Runnable{
     
     // cai dat man hinh
     final int originalTileSize = 16; // anh se la 16 pixels * 16 pixels
     final int scale = 3; // chi so phong to hinh anh khi vao game
-    final int tileSize = originalTileSize * scale; // kich co hinh anh sau khi phong to
+    public final int tileSize = originalTileSize * scale; // kich co hinh anh sau khi phong to
     // co the thay doi kich thuoc tuy vao anh dau vao
     
-    final int maxScreenCol = 24;
-    final int maxScreenRow = 16;
-    final int screenWidth = tileSize * maxScreenCol;
-    final int screenHeight = tileSize * maxScreenRow;
+    public final int maxScreenCol = 24;
+    public final int maxScreenRow = 16;
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
     //chia man hinh game thanh 24tileSize * 16tileSize
-    
-    //vi tri nhan vat mac dinh
-    int playerX = 100;
-    int playerY = 500;
-    int playerSpeed = 4;
-    
-    //Jump
-    boolean jumping = false;
-    int floor = playerY;
-    int jumpStrength;
-    int weight = 1;
-    
     
     //FPS 
     int FPS = 60;
     
+    //tile
+    TileManager tileM = new TileManager(this);
+    //keyHandler
     KeyHandler keyH = new KeyHandler();
+    //game
     Thread gameThread;
+    //player
+    Player player = new Player(this, keyH);
     
     public GamePanel(){
         
@@ -98,33 +94,10 @@ public class GamePanel extends JPanel implements Runnable{
     }
     
     public void update(){
-        if(keyH.upPressed == true){
-            playerY -= playerSpeed;
-        }
-        if(keyH.downPressed == true){
-            playerY += playerSpeed;
-        }
-        if(keyH.leftPressed == true){
-            playerX -= playerSpeed;
-        }
-        if(keyH.rightPressed == true){
-            playerX += playerSpeed;
-        }
-        if(keyH.spacePressed == true){
-            if(playerY >= floor){
-                jumpStrength = 24;
-                jumping = true;
-            }
-        }
-        if(jumping){
-            playerY -= jumpStrength;
-            jumpStrength -= weight;
-            if(playerY >= floor){
-                playerY = floor;
-                jumping = false;
-            }
-        }
         
+        //update nhan vat
+        player.update();
+      
     }
     
     public void paintComponent(Graphics g){ // subclass of JPanel
@@ -133,9 +106,11 @@ public class GamePanel extends JPanel implements Runnable{
         
         Graphics2D g2 = (Graphics2D)g;
         
-        g2.setColor(Color.white);
+        //ve tile trc khi ve nhan vat
+        tileM.draw(g2);
         
-        g2.fillRect(playerX, playerY, tileSize, tileSize);
+        //ve nhan vat
+        player.draw(g2);
         
         g2.dispose();
     }
