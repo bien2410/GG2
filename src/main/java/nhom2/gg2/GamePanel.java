@@ -27,6 +27,12 @@ public class GamePanel extends JPanel implements Runnable{
     public final int screenHeight = tileSize * maxScreenRow;
     //chia man hinh game thanh 24tileSize * 16tileSize
     
+    // World setting
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWitdth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+    
     //FPS 
     int FPS = 60;
     
@@ -37,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable{
     //game
     Thread gameThread;
     //player
-    Player player = new Player(this, keyH);
+    public Player player = new Player(this, keyH);
     
     public GamePanel(){
         

@@ -13,7 +13,7 @@ import java.awt.image.*;
 //class bo cua player, npc, monster,...
 public class Entity {
     
-    public int x, y;
+    public int worldX, worldY; // vi tri cua player tren map(ko phai tren man hinh)
     public int speed;
     
     public BufferedImage jump1, jump2, left1, left2, right1, right2;

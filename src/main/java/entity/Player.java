@@ -19,6 +19,10 @@ public class Player extends Entity{
     GamePanel gp;
     KeyHandler keyH;
     
+    //vi tri cua player tren man hinh
+    public final int screenX;
+    public final int screenY;
+    
     //Jump
     boolean jumping = false;
     int floor;
@@ -29,15 +33,17 @@ public class Player extends Entity{
         
         this.gp = gp;
         this.keyH = keyH;
-        
+        //player o giua man hinh -> sua lai sau
+        screenX = gp.tileSize * 8;
+        screenY = gp.tileSize * 10;
         setDefaultValues();
     }
     
     public void setDefaultValues(){
-        x = 100;
-        y = 500;
+        worldX = gp.tileSize * 8;
+        worldY = gp.tileSize * (gp.maxWorldRow - 6); // co 5 hang dat ben duoi
         speed = 4;
-        floor = y;
+        floor = worldY;
         direction = "right";
     }
     
@@ -63,24 +69,24 @@ public class Player extends Entity{
                 
             if(keyH.leftPressed == true){
                 direction = "left";
-                x -= speed;
+                worldX -= speed;
             }
             else if(keyH.rightPressed == true){
                 direction = "right";
-                x += speed;
+                worldX += speed;
             }
         }
         if(keyH.upPressed == true){
-            if(y >= floor){
+            if(worldY >= floor){
                 jumpStrength = 24;
                 jumping = true;
             }
         }
         if(jumping){
-            y -= jumpStrength;
+            worldY -= jumpStrength;
             jumpStrength -= weight;
-            if(y >= floor){
-                y = floor;
+            if(worldY >= floor){
+                worldY = floor;
                 jumping = false;
             }
         }
@@ -102,7 +108,7 @@ public class Player extends Entity{
         
         g2.setColor(Color.white);
         
-        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+        g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
         /*sau nay ve nv o day
         BufferedImage image = null;
         switch(direction){
@@ -123,7 +129,7 @@ public class Player extends Entity{
                 }
                 break;
         }
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
         */
     }
 }
