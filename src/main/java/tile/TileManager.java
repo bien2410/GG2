@@ -16,8 +16,8 @@ import nhom2.gg2.*;
 public class TileManager {
     
     GamePanel gp;
-    Tile[] tile;
-    int mapTileNum[][];
+    public Tile[] tile;
+    public int mapTileNum[][];
     
     public TileManager(GamePanel gp){
         
@@ -36,16 +36,10 @@ public class TileManager {
             //dien duong dan
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/earth.png"));
-            tile[1] = new Tile();
-            tile[1].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/floor01.png"));
-            tile[2] = new Tile();
-            tile[2].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/hut.png"));
-            tile[3] = new Tile();
-            tile[3].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/road00.png"));
+            tile[0].collision = true;
+            
             tile[4] = new Tile();
-            tile[4].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/tree.png"));
-            tile[5] = new Tile();
-            tile[5].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/wall.png"));
+            tile[4].collision = false;
         }
         catch(IOException e){
             e.printStackTrace();
@@ -110,7 +104,8 @@ public class TileManager {
                worldX < gp.player.worldX + (gp.screenWidth - gp.player.screenX) &&
                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                worldY < gp.player.worldY + (gp.screenHeight - gp.player.screenY)){
-                g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+               if(tileNum != 4)
+                    g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
             }
             worldCol++;
             
