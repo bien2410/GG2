@@ -25,7 +25,8 @@ public class GG2 {
         window.pack(); // cua so window khop voi kich co GamePanel
         window.setLocationRelativeTo(null); // cua so luon hien o giua man hinh
         window.setVisible(true); // hien ra cua so de nhin thay
-    
+        
+        gamePanel.setupGame();
         gamePanel.startGameThread(); // bat dau game
     }
 }

@@ -12,6 +12,7 @@ package nhom2.gg2;
 import entity.*;
 import java.awt.*;
 import javax.swing.*;
+import object.*;
 import tile.*;
 public class GamePanel extends JPanel implements Runnable{
     
@@ -30,8 +31,7 @@ public class GamePanel extends JPanel implements Runnable{
     // World setting
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
-    public final int worldWitdth = tileSize * maxWorldCol;
-    public final int worldHeight = tileSize * maxWorldRow;
+   
     
     //FPS 
     int FPS = 60;
@@ -40,12 +40,22 @@ public class GamePanel extends JPanel implements Runnable{
     TileManager tileM = new TileManager(this);
     //keyHandler
     KeyHandler keyH = new KeyHandler();
+    //Sound
+    Sound music = new Sound();
+    Sound se = new Sound();
+    //collision
+    public CollisionChecker cChecker = new CollisionChecker(this);
+    //AssetSetter kieu cai dat ay
+    public AssetSetter aSetter = new AssetSetter(this);
+    //UI
+    public UI ui = new UI(this);
     //game
     Thread gameThread;
     //player
     public Player player = new Player(this, keyH);
-    //collision
-    public CollisionChecker cChecker = new CollisionChecker(this);
+    //object
+    public SuperObject obj[] = new SuperObject[10];
+    
     
     public GamePanel(){
         
@@ -57,7 +67,12 @@ public class GamePanel extends JPanel implements Runnable{
         this.setFocusable(true);
     
     }
-
+    
+    public void setupGame(){
+        
+        aSetter.setObject();
+        playMusic(0);
+    }
     
     public void startGameThread(){
         
@@ -114,12 +129,53 @@ public class GamePanel extends JPanel implements Runnable{
         
         Graphics2D g2 = (Graphics2D)g;
         
+        //DEBUG
+        long drawStart = 0;
+        if(keyH.checkDrawTime == true){
+            drawStart = System.nanoTime();
+        }
+        
         //ve tile trc khi ve nhan vat
         tileM.draw(g2);
+        
+        //ve object
+        for(int i = 0; i < obj.length; i++){
+            if(obj[i] != null){
+                obj[i].draw(g2, this);            
+            }
+        }
         
         //ve nhan vat
         player.draw(g2);
         
+        //ve UI
+        ui.draw(g2);
+        //DEBUG
+        if(keyH.checkDrawTime == true){
+            long drawEnd = System.nanoTime();
+            long passed = drawEnd - drawStart;
+            g2.setColor(Color.white);
+            g2.drawString("Draw Time: " + passed, 10, 400);
+            System.out.println(passed);
+        }
+        
         g2.dispose();
+    }
+    
+    public void playMusic(int i){ // am thanh nen
+        
+        music.setFile(i);
+        music.play();
+        music.loop();
+    }
+    
+    public void stopMusic(){
+        music.stop();
+    }
+    
+    public void playSE(int i){ // an thanh hieu ung
+        
+        se.setFile(i);
+        se.play();
     }
 }

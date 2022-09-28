@@ -12,6 +12,7 @@ import java.awt.event.*;
 public class KeyHandler implements KeyListener {
     
     public boolean upPressed, downPressed, leftPressed, rightPressed, spacePressed; 
+    public boolean checkDrawTime = false;
     @Override
     public void keyTyped(KeyEvent e) {
     }
@@ -34,7 +35,12 @@ public class KeyHandler implements KeyListener {
             rightPressed = true;
         }
         if(code == KeyEvent.VK_SPACE){
-            spacePressed = true;
+            if(checkDrawTime == false){
+                checkDrawTime = true;
+            }
+            else if(checkDrawTime == true){
+                checkDrawTime = false;
+            }
         }
     
     }

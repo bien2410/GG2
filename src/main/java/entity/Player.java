@@ -22,6 +22,7 @@ public class Player extends Entity{
     //vi tri cua player tren man hinh
     public final int screenX;
     public final int screenY;
+    public int hasKey = 0;
     
     //Jump
     boolean jumping = false;
@@ -42,6 +43,8 @@ public class Player extends Entity{
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 31; // chinh sua ne
         
@@ -57,18 +60,30 @@ public class Player extends Entity{
     
     //nhap anh dau vao
     public void getPlayerImage(){
+        //dien duong dan
+        jump1 = setup("");
+        jump2 = setup("");
+        left1 = setup("");
+        left2 = setup("");
+        right1 = setup("");
+        right2 = setup("");
+       
+    }
+    
+    public BufferedImage setup(String imageName){
+       
+        UtilityTool uTool = new UtilityTool();
+        BufferedImage image = null;
+        
         try{
-            // dien duong dan zo
-            jump1 = ImageIO.read(getClass().getResourceAsStream(""));
-            jump2 = ImageIO.read(getClass().getResourceAsStream(""));
-            left1 = ImageIO.read(getClass().getResourceAsStream(""));
-            left2 = ImageIO.read(getClass().getResourceAsStream(""));
-            right1 = ImageIO.read(getClass().getResourceAsStream(""));
-            right2 = ImageIO.read(getClass().getResourceAsStream(""));
+            image = ImageIO.read(getClass().getResourceAsStream("/res/player" + imageName + ".png"));
+            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
         }
         catch(IOException e){
             e.printStackTrace();
         }
+             
+        return image;
     }
     
     //floor
@@ -91,7 +106,9 @@ public class Player extends Entity{
     
     // thao tac cua nhan vat
     public void update(){
-        
+        //check object collision
+        int objIndex = gp.cChecker.checkObject(this, true);
+        pickUpObject(objIndex);
         //tha roi tu do
         if(gp.cChecker.checkFloor(this) == false && jumping == false){
             
@@ -166,6 +183,22 @@ public class Player extends Entity{
         }
     }
     
+    //tuong tac object
+    public void pickUpObject(int i){
+       if(i != 999){
+           
+           String objectName = gp.obj[i].name;
+           switch(objectName){
+               case"Key":
+                   hasKey++;
+                   gp.obj[i] = null;
+                   gp.playSE(1);
+                   gp.ui.showMessage("nhat dc chia khoa");
+                   break;
+           }
+        }
+    }
+    
     // ve nhan vat
     public void draw(Graphics2D g2){
         
@@ -193,7 +226,7 @@ public class Player extends Entity{
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
         */
     }
 }

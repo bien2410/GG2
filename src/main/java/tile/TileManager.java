@@ -32,14 +32,23 @@ public class TileManager {
     
     // nhap anh tile vao
     public void getTileImage(){
-        try{
-            //dien duong dan
-            tile[0] = new Tile();
-            tile[0].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/earth.png"));
-            tile[0].collision = true;
+            //test thoi
+            setup(0, "earth", true);
             
             tile[4] = new Tile();
             tile[4].collision = false;
+        
+    }
+    
+    public void setup(int index, String imagePath, boolean collision){
+        
+        UtilityTool uTool = new UtilityTool();
+        
+        try{
+            tile[index] = new Tile();
+            tile[index].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/" + imagePath + ".png"));
+            tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
+            tile[index].collision = collision;
         }
         catch(IOException e){
             e.printStackTrace();
@@ -105,7 +114,7 @@ public class TileManager {
                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                worldY < gp.player.worldY + (gp.screenHeight - gp.player.screenY)){
                if(tileNum != 4)
-                    g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    g2.drawImage(tile[tileNum].image, screenX, screenY, null);
             }
             worldCol++;
             

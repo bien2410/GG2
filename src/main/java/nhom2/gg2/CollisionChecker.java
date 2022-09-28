@@ -109,4 +109,37 @@ public class CollisionChecker {
         }
         return false;
     }
+
+    public int checkObject(Entity entity, boolean player){
+        
+        int index = 999;
+        
+        for(int i = 0; i < gp.obj.length; i++){
+            
+            if(gp.obj[i] != null){
+                
+                //Get entity's solid area position
+                entity.solidArea.x += entity.worldX;
+                entity.solidArea.y += entity.worldY;
+                
+                //Get the object's solid area position
+                gp.obj[i].solidArea.x += gp.obj[i].worldX;
+                gp.obj[i].solidArea.y += gp.obj[i].worldY;
+                
+                if(entity.solidArea.intersects(gp.obj[i].solidArea)){ // thay cho 1 doan code cua player, nhung ko thay dc
+                    if(gp.obj[i].collision == true){
+                        entity.collisionOn = true; //code nay chua dung, sua lai
+                    }
+                    if(player == true){ // neu cai khac cham vao thi ko tuong tac: npc, monster
+                        index = i;
+                    }
+                }
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                gp.obj[i].solidArea.x = gp.obj[i].solidAreaDefaultX;
+                gp.obj[i].solidArea.y = gp.obj[i].solidAreaDefaultY;
+            }
+        }
+        return index;
+    }
 }
