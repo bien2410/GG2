@@ -11,7 +11,9 @@ package nhom2.gg2;
 import java.awt.event.*;
 public class KeyHandler implements KeyListener {
     
-    public boolean upPressed, downPressed, leftPressed, rightPressed, spacePressed; 
+    public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean spacePressed; //draw time
+    public boolean jPressed, kPressed;
     public boolean checkDrawTime = false;
     @Override
     public void keyTyped(KeyEvent e) {
@@ -33,6 +35,12 @@ public class KeyHandler implements KeyListener {
         }
         if(code == KeyEvent.VK_D){
             rightPressed = true;
+        }
+        if(code == KeyEvent.VK_J){
+            jPressed = true;
+        }
+        if(code == KeyEvent.VK_K){
+            kPressed = true;
         }
         if(code == KeyEvent.VK_SPACE){
             if(checkDrawTime == false){
@@ -64,6 +72,12 @@ public class KeyHandler implements KeyListener {
         }
         if(code == KeyEvent.VK_SPACE){
             spacePressed = false;
+        }
+        if(code == KeyEvent.VK_J){
+            jPressed = false;
+        }
+        if(code == KeyEvent.VK_K){
+            kPressed = false;
         }
     }
     

@@ -4,6 +4,7 @@
  */
 package nhom2.gg2;
 
+import monster.MON_GreenSlime;
 import object.OBJ_Key;
 
 /**
@@ -32,5 +33,16 @@ public class AssetSetter {
         gp.obj[2] = new OBJ_Key(gp);
         gp.obj[2].worldX = 16 * gp.tileSize;
         gp.obj[2].worldY = 38 * gp.tileSize;
+    }
+    
+    public void setMonster(){
+        
+        gp.monster[0] = new MON_GreenSlime(gp);
+        gp.monster[0].worldX = 20 * gp.tileSize;
+        gp.monster[0].worldY = 44 * gp.tileSize;
+        
+        gp.monster[1] = new MON_GreenSlime(gp);
+        gp.monster[1].worldX = 28 * gp.tileSize;
+        gp.monster[1].worldY = 43 * gp.tileSize;
     }
 }

@@ -142,4 +142,32 @@ public class CollisionChecker {
         }
         return index;
     }
+    //NPC OR MONSTER
+    public int checkEntity(Entity entity, Entity[] target){
+        
+        int index = 999;
+        
+        for(int i = 0; i < target.length; i++){
+            
+            if(target[i] != null){
+                
+                //Get entity's solid area position
+                entity.solidArea.x += entity.worldX;
+                entity.solidArea.y += entity.worldY;
+                
+                //Get the target's solid area position
+                target[i].solidArea.x += target[i].worldX;
+                target[i].solidArea.y += target[i].worldY;
+                
+                if(entity.solidArea.intersects(target[i].solidArea)){ 
+                    index = i;
+                }
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                target[i].solidArea.x = target[i].solidAreaDefaultX;
+                target[i].solidArea.y = target[i].solidAreaDefaultY;
+            }
+        }
+        return index;
+    }
 }

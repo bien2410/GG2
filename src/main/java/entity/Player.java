@@ -15,8 +15,6 @@ import nhom2.gg2.*;
  * @author ADMIN
  */
 public class Player extends Entity{
-    
-    GamePanel gp;
     KeyHandler keyH;
     
     //vi tri cua player tren man hinh
@@ -31,9 +29,15 @@ public class Player extends Entity{
     int fallStrength = 0;
     int weight = 1;
     
+    //attack
+    int attackNum = 0;
+    boolean attacking = false;
+    
+    //shoot
+    boolean shooting = false;
     public Player(GamePanel gp, KeyHandler keyH){
         
-        this.gp = gp;
+        super(gp);
         this.keyH = keyH;
         //player o giua man hinh -> sua lai sau
         screenX = gp.tileSize * 8;
@@ -48,43 +52,42 @@ public class Player extends Entity{
         solidArea.width = 32;
         solidArea.height = 31; // chinh sua ne
         
+        //attack hit detection, chinh sua sau nay tuy vu khi
+        attackArea.width = gp.tileSize * 2;
+        attackArea.height = gp.tileSize * 2;
+        
         setDefaultValues();
+        //getPlayerImage();
+        //getPlayerAttackImage();
     }
     
     public void setDefaultValues(){
         worldX = gp.tileSize * 8;
         worldY = gp.tileSize * (gp.maxWorldRow - 6); // co 5 hang dat ben duoi
         speed = 5;
+        hp = 100;
         direction = "right";
     }
     
     //nhap anh dau vao
     public void getPlayerImage(){
         //dien duong dan
-        jump1 = setup("");
-        jump2 = setup("");
-        left1 = setup("");
-        left2 = setup("");
-        right1 = setup("");
-        right2 = setup("");
+        jump1 = setup("", gp.tileSize, gp.tileSize);
+        jump2 = setup("", gp.tileSize, gp.tileSize);
+        left1 = setup("", gp.tileSize, gp.tileSize);
+        left2 = setup("", gp.tileSize, gp.tileSize);
+        right1 = setup("", gp.tileSize, gp.tileSize);
+        right2 = setup("", gp.tileSize, gp.tileSize);
        
+    }
+    public void getPlayerAttackImage(){ // change weapon 16*32
+        
+        attackLeft1 = setup("", gp.tileSize * 2, gp.tileSize);
+        attackLeft2 = setup("", gp.tileSize * 2, gp.tileSize);
+        attackRight1 = setup("", gp.tileSize * 2, gp.tileSize);
+        attackRight2 = setup("", gp.tileSize * 2, gp.tileSize);
     }
     
-    public BufferedImage setup(String imageName){
-       
-        UtilityTool uTool = new UtilityTool();
-        BufferedImage image = null;
-        
-        try{
-            image = ImageIO.read(getClass().getResourceAsStream("/res/player" + imageName + ".png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-             
-        return image;
-    }
     
     //floor
     public int floor(){
@@ -106,6 +109,11 @@ public class Player extends Entity{
     
     // thao tac cua nhan vat
     public void update(){
+        
+        //check co dang ban ko
+        if(shooting == true && gp.bullet == null){
+            shooting = false;
+        }
         //check object collision
         int objIndex = gp.cChecker.checkObject(this, true);
         pickUpObject(objIndex);
@@ -113,6 +121,15 @@ public class Player extends Entity{
         if(gp.cChecker.checkFloor(this) == false && jumping == false){
             
             falling = true;
+        }
+        if(keyH.jPressed == true && attacking == false){
+            attacking = true;
+            if(jumping == false && falling == false) attackNum = 1; //chem thuong
+            else attackNum = 2; // nhay chem
+        }
+        if(keyH.kPressed == true && attacking == false && shooting == false){
+            shooting = true;
+            gp.bullet = new Bullet(gp);
         }
         if(keyH.leftPressed == true || keyH.rightPressed == true){ // hoat anh chi doi khi di chuyen
                 
@@ -181,8 +198,69 @@ public class Player extends Entity{
                 fallStrength = 0;
             }
         }
+        
+        //attack
+        if(attacking == true){
+            attacking();
+        }
     }
     
+    public void attacking(){
+        //doi hoat anh, sua lai sau
+        spriteCounter++;
+        
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 10){
+            spriteNum = 2;
+            
+            //save the current worldX, worldY, solidArea
+            int currentWorldX = worldX;
+            int currentWorldY = worldY;
+            int solidAreaWidth = solidArea.width;
+            int solidAreaHeight = solidArea.height;
+            
+            // Adjust player's worldX,Y for the attackArea
+            if(attackNum == 1){
+                if(direction.equals("right")){
+                    solidArea.width += attackArea.width;
+                }
+                if(direction.equals("left")){
+                    solidArea.width += attackArea.width;
+                    worldX -= attackArea.width;
+                }
+            }
+            if(attackNum == 2){
+                if(direction.equals("right")){
+                    worldY -= attackArea.height;
+                    solidArea.width += attackArea.width;
+                    solidArea.height += attackArea.height * 2;
+                }
+                if(direction.equals("left")){
+                    worldY -= attackArea.height;
+                    solidArea.width += attackArea.width;
+                    solidArea.height += attackArea.height * 2;
+                    worldX -= attackArea.width;
+                }
+            }
+            int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+            interacMonster(monsterIndex);
+            
+            worldX = currentWorldX;
+            worldY = currentWorldY;
+            solidArea.width = solidAreaWidth;
+            solidArea.height = solidAreaHeight;
+        }
+        if(spriteCounter > 10){
+            spriteNum = 1;
+            if(spriteCounter > 60){
+                spriteCounter = 0;
+                attacking = false;
+                attackNum = 0;
+            }
+        }
+    }
     //tuong tac object
     public void pickUpObject(int i){
        if(i != 999){
@@ -199,6 +277,14 @@ public class Player extends Entity{
         }
     }
     
+    //tuong tac monster
+    public void interacMonster(int i){
+        if(i != 999){
+            
+            gp.ui.showMessage("chem trung r");
+        }
+    }
+    
     // ve nhan vat
     public void draw(Graphics2D g2){
         
@@ -206,6 +292,33 @@ public class Player extends Entity{
         
         g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
         
+        //ve thanh hp
+        g2.setColor(Color.red);
+        g2.fillRect(gp.tileSize * 1, gp.tileSize * 2, hp * 3, gp.tileSize / 2);
+        
+        //ve demo
+        if(attacking == true){
+            if(attackNum == 1){
+                if("right".equals(direction)){
+                    g2.setColor(Color.orange);
+                    g2.drawRect(screenX + gp.tileSize, screenY, gp.tileSize * 2, gp.tileSize);
+                }
+                if("left".equals(direction)){
+                    g2.setColor(Color.orange);
+                    g2.drawRect(screenX - gp.tileSize * 2, screenY, gp.tileSize * 2, gp.tileSize);
+                }
+            }
+            if(attackNum == 2){
+                if("right".equals(direction)){
+                    g2.setColor(Color.orange);
+                    g2.drawRect(screenX, screenY - gp.tileSize * 2, gp.tileSize * 3, gp.tileSize * 5);
+                }
+                if("left".equals(direction)){
+                    g2.setColor(Color.orange);
+                    g2.drawRect(screenX - gp.tileSize * 2, screenY - gp.tileSize * 2, gp.tileSize * 3, gp.tileSize * 5);
+                }
+            }
+        }
         /*sau nay ve nv o day
         BufferedImage image = null;
         switch(direction){

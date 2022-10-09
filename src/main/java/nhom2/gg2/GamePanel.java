@@ -12,6 +12,7 @@ package nhom2.gg2;
 import entity.*;
 import java.awt.*;
 import javax.swing.*;
+import monster.*;
 import object.*;
 import tile.*;
 public class GamePanel extends JPanel implements Runnable{
@@ -53,8 +54,12 @@ public class GamePanel extends JPanel implements Runnable{
     Thread gameThread;
     //player
     public Player player = new Player(this, keyH);
+    //bullet
+    public Bullet bullet = null;
+    //monster
+    public MON_GreenSlime[] monster = new MON_GreenSlime[20];
     //object
-    public SuperObject obj[] = new SuperObject[10];
+    public SuperObject[] obj = new SuperObject[10];
     
     
     public GamePanel(){
@@ -71,7 +76,9 @@ public class GamePanel extends JPanel implements Runnable{
     public void setupGame(){
         
         aSetter.setObject();
+        aSetter.setMonster();
         playMusic(0);
+        stopMusic();
     }
     
     public void startGameThread(){
@@ -120,7 +127,16 @@ public class GamePanel extends JPanel implements Runnable{
         
         //update nhan vat
         player.update();
-      
+        for(int i = 0; i < monster.length; i++){
+            if(monster[i] != null){
+                monster[i].update();
+            }
+        }
+        if(bullet != null) {
+            bullet.update();
+            if(bullet.worldX == bullet.limitX) bullet = null;
+            else if(bullet.touch) bullet = null;
+        }
     }
     
     public void paintComponent(Graphics g){ // subclass of JPanel
@@ -148,6 +164,17 @@ public class GamePanel extends JPanel implements Runnable{
         //ve nhan vat
         player.draw(g2);
         
+        //ve dan
+        if(bullet != null) {
+            bullet.draw(g2);
+        }
+        
+        //ve monster
+        for(int i = 0; i < monster.length; i++){
+            if(monster[i] != null){
+                monster[i].draw(g2);            
+            }
+        }
         //ve UI
         ui.draw(g2);
         //DEBUG
