@@ -32,12 +32,12 @@ public class TileManager {
     
     // nhap anh tile vao
     public void getTileImage(){
-            //test thoi
-            setup(0, "earth", true);
+            //0 la ko co gi de ve map ay ma
+            tile[0] = new Tile();
+            tile[0].collision = false;
             
-            tile[4] = new Tile();
-            tile[4].collision = false;
-        
+            setup(1, "earth", true);
+            
     }
     
     public void setup(int index, String imagePath, boolean collision){
@@ -113,7 +113,7 @@ public class TileManager {
                worldX < gp.player.worldX + (gp.screenWidth - gp.player.screenX) &&
                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                worldY < gp.player.worldY + (gp.screenHeight - gp.player.screenY)){
-               if(tileNum != 4)
+               if(tileNum != 0) 
                     g2.drawImage(tile[tileNum].image, screenX, screenY, null);
             }
             worldCol++;

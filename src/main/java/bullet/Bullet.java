@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package entity;
+package bullet;
 
+import entity.*;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import nhom2.gg2.GamePanel;
 
 /**
@@ -28,8 +28,7 @@ public class Bullet extends Entity{
         if(direction.equals("left")){
             limitX = worldX - gp.tileSize * 10;
         }
-        jump1 = setup("/objects/key", gp.tileSize, gp.tileSize);
-        solidArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);      
+        image = setup("/objects/key", gp.tileSize, gp.tileSize);
     }
     public void update(){
         int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
@@ -57,7 +56,7 @@ public class Bullet extends Entity{
             worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
             worldY < gp.player.worldY + (gp.screenHeight - gp.player.screenY)){
             
-           g2.drawImage(jump1, screenX, screenY, null);   
+           g2.drawImage(image, screenX, screenY, null);   
         }
     }
 }

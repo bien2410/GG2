@@ -20,8 +20,7 @@ public class UI {
     public boolean messageOn = false;
     public String message = "";
     int messageCounter = 0;
-    //public boolean gameFinished = false; luc day gameThread = null;
-            
+    //public boolean gameFinished = false; luc day gameThread = null; 
             
     public UI(GamePanel gp){
         this.gp = gp;
@@ -38,12 +37,17 @@ public class UI {
     }
     
     public void draw(Graphics2D g2){
-        
+        //ve haskey
         g2.setFont(TNR_40);
         g2.setColor(Color.white);
         g2.drawImage(keyImage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
         g2.drawString("x " + gp.player.hasKey, 74, 65);
         
+        //ve hp player
+        g2.setColor(Color.red);
+        g2.fillRect(gp.tileSize * 1, gp.tileSize * 2, gp.player.hp * 3, gp.tileSize / 2);
+        
+        g2.setColor(Color.white);
         //MESSAGE
         if(messageOn == true){
             

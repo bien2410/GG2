@@ -20,14 +20,14 @@ public class MON_GreenSlime extends Entity{
         super(gp);
         
         name = "Green Slime";
-        speed = 1;
+        speed = 1; // speed nay hien chua dung
         hp = 4;
         
-        solidArea = new Rectangle();
         solidArea.x = 3;
         solidArea.y = 18;
         solidArea.width = 42;
         solidArea.height = 30;
+        //bien de check collision xong chuyen ve
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         
@@ -40,7 +40,6 @@ public class MON_GreenSlime extends Entity{
         left2 = setup("/monster/anh2", gp.tileSize, gp.tileSize);
         right1 = setup("/monster/anh1", gp.tileSize, gp.tileSize);
         right2 = setup("/monster/anh2", gp.tileSize, gp.tileSize);
-        jump1 = setup("/objects/key", gp.tileSize, gp.tileSize);
     }
     
     public void setAction(){
@@ -111,6 +110,6 @@ public class MON_GreenSlime extends Entity{
             
            g2.drawImage(image, screenX, screenY, null);   
         }
-        //g2.drawImage(image, worldX, worldY, null);
+   
     }
 }

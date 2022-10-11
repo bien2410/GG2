@@ -4,31 +4,36 @@
  */
 package object;
 
-import java.io.*;
-import javax.imageio.*;
-import nhom2.gg2.GamePanel;
+import entity.*;
+import java.awt.*;
+import nhom2.gg2.*;
 
 
 /**
  *
  * @author ADMIN
  */
-public class OBJ_Key extends SuperObject {
-    
-    GamePanel gp;
+public class OBJ_Key extends Entity {
     
     public OBJ_Key(GamePanel gp) {
-    
-        this.gp = gp;
+   
+        super(gp);
         name = "Key";
-        try{
-            //dien duong dan
-            image = ImageIO.read(getClass().getResourceAsStream("/res/objects/key.png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+        image = setup("/objects/key", gp.tileSize, gp.tileSize);
+        //collision = true;
     }
     
+    public void draw(Graphics2D g2){
+        
+        int screenX = worldX - gp.player.worldX + gp.player.screenX;
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        
+        if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+            worldX < gp.player.worldX + (gp.screenWidth - gp.player.screenX) &&
+            worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+            worldY < gp.player.worldY + (gp.screenHeight - gp.player.screenY)){
+            
+           g2.drawImage(image, screenX, screenY, null);   
+        }
+    }
 }

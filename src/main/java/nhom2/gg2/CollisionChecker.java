@@ -18,7 +18,7 @@ public class CollisionChecker {
         this.gp = gp;
     }
     //check trai phai
-    public void checkTile(Entity entity){
+    public void checkTile(Entity entity){ // co di chuyen nhu player, monster, npc,...
         
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
@@ -90,16 +90,17 @@ public class CollisionChecker {
     }
     
     //check tran nha
-    
     public boolean checkRoof(Entity entity){
        
         int entityLeftWorldX = entity.worldX + entity.solidArea.x;
         int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
         int entityTopWorldY = entity.worldY + entity.solidArea.y;
        
+        
         int entityLeftCol = entityLeftWorldX / gp.tileSize;
         int entityRightCol = entityRightWorldX / gp.tileSize;
         int entityTopRow = entityTopWorldY / gp.tileSize;
+        
         
         int tileNum1, tileNum2;
         tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
@@ -128,7 +129,7 @@ public class CollisionChecker {
                 
                 if(entity.solidArea.intersects(gp.obj[i].solidArea)){ // thay cho 1 doan code cua player, nhung ko thay dc
                     if(gp.obj[i].collision == true){
-                        entity.collisionOn = true; //code nay chua dung, sua lai
+                        entity.collisionOn = true; // bo di, check collision nay phai khi di chuyen, nhay kho lam vl
                     }
                     if(player == true){ // neu cai khac cham vao thi ko tuong tac: npc, monster
                         index = i;

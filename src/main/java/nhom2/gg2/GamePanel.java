@@ -9,11 +9,11 @@ package nhom2.gg2;
  *
  * @author ADMIN
  */
+import bullet.*;
 import entity.*;
 import java.awt.*;
 import javax.swing.*;
 import monster.*;
-import object.*;
 import tile.*;
 public class GamePanel extends JPanel implements Runnable{
     
@@ -29,7 +29,7 @@ public class GamePanel extends JPanel implements Runnable{
     public final int screenHeight = tileSize * maxScreenRow;
     //chia man hinh game thanh 24tileSize * 16tileSize
     
-    // World setting
+    // World setting la map day
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
    
@@ -57,9 +57,10 @@ public class GamePanel extends JPanel implements Runnable{
     //bullet
     public Bullet bullet = null;
     //monster
-    public MON_GreenSlime[] monster = new MON_GreenSlime[20];
+    public Entity[] monster = new MON_GreenSlime[20];
     //object
-    public SuperObject[] obj = new SuperObject[10];
+    public Entity[] obj = new Entity[10];
+    
     
     
     public GamePanel(){
@@ -145,19 +146,13 @@ public class GamePanel extends JPanel implements Runnable{
         
         Graphics2D g2 = (Graphics2D)g;
         
-        //DEBUG
-        long drawStart = 0;
-        if(keyH.checkDrawTime == true){
-            drawStart = System.nanoTime();
-        }
-        
         //ve tile trc khi ve nhan vat
         tileM.draw(g2);
         
         //ve object
         for(int i = 0; i < obj.length; i++){
             if(obj[i] != null){
-                obj[i].draw(g2, this);            
+                obj[i].draw(g2);            
             }
         }
         
@@ -177,15 +172,7 @@ public class GamePanel extends JPanel implements Runnable{
         }
         //ve UI
         ui.draw(g2);
-        //DEBUG
-        if(keyH.checkDrawTime == true){
-            long drawEnd = System.nanoTime();
-            long passed = drawEnd - drawStart;
-            g2.setColor(Color.white);
-            g2.drawString("Draw Time: " + passed, 10, 400);
-            System.out.println(passed);
-        }
-        
+     
         g2.dispose();
     }
     

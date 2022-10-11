@@ -4,10 +4,8 @@
  */
 package entity;
 
+import bullet.*;
 import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import javax.imageio.*;
 import nhom2.gg2.*;
 
 /**
@@ -15,11 +13,12 @@ import nhom2.gg2.*;
  * @author ADMIN
  */
 public class Player extends Entity{
-    KeyHandler keyH;
+    KeyHandler keyH; // input tu ban phim
     
     //vi tri cua player tren man hinh
     public final int screenX;
     public final int screenY;
+    
     public int hasKey = 0;
     
     //Jump
@@ -35,22 +34,22 @@ public class Player extends Entity{
     
     //shoot
     boolean shooting = false;
+    
     public Player(GamePanel gp, KeyHandler keyH){
         
         super(gp);
         this.keyH = keyH;
-        //player o giua man hinh -> sua lai sau
+        //vi tri cua player tren man hinh
         screenX = gp.tileSize * 8;
         screenY = gp.tileSize * 10;
         
         //collision
-        solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
-        solidAreaDefaultX = solidArea.x;
-        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 31; // chinh sua ne
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         
         //attack hit detection, chinh sua sau nay tuy vu khi
         attackArea.width = gp.tileSize * 2;
@@ -62,11 +61,12 @@ public class Player extends Entity{
     }
     
     public void setDefaultValues(){
+        //vi tri that su cua player tren map
         worldX = gp.tileSize * 8;
         worldY = gp.tileSize * (gp.maxWorldRow - 6); // co 5 hang dat ben duoi
+        
         speed = 5;
         hp = 100;
-        direction = "right";
     }
     
     //nhap anh dau vao
@@ -88,9 +88,8 @@ public class Player extends Entity{
         attackRight2 = setup("", gp.tileSize * 2, gp.tileSize);
     }
     
-    
-    //floor
-    public int floor(){
+    //2 ham xu ly cho muot
+    public int land(){
         int ans = worldY;
         while(ans % gp.tileSize != 0){
             ans--;
@@ -98,10 +97,9 @@ public class Player extends Entity{
         return ans;
     }
     
-    //roof
-    public int roof(){
+    public int head(){
         int ans = worldY;
-       while(ans % gp.tileSize != 0){
+        while(ans % gp.tileSize != 0){
             ans++;
         }
         return ans - solidArea.y; // hoat anh
@@ -110,26 +108,28 @@ public class Player extends Entity{
     // thao tac cua nhan vat
     public void update(){
         
-        //check co dang ban ko
-        if(shooting == true && gp.bullet == null){
-            shooting = false;
-        }
         //check object collision
         int objIndex = gp.cChecker.checkObject(this, true);
         pickUpObject(objIndex);
+        
         //tha roi tu do
         if(gp.cChecker.checkFloor(this) == false && jumping == false){
             
             falling = true;
         }
+        // check chem
         if(keyH.jPressed == true && attacking == false){
             attacking = true;
             if(jumping == false && falling == false) attackNum = 1; //chem thuong
             else attackNum = 2; // nhay chem
         }
+        //check co dang ban ko
+        if(shooting == true && gp.bullet == null){
+            shooting = false;
+        }
         if(keyH.kPressed == true && attacking == false && shooting == false){
-            shooting = true;
             gp.bullet = new Bullet(gp);
+            shooting = true;
         }
         if(keyH.leftPressed == true || keyH.rightPressed == true){ // hoat anh chi doi khi di chuyen
                 
@@ -179,12 +179,12 @@ public class Player extends Entity{
             jumpStrength -= weight;
             
             if(gp.cChecker.checkRoof(this)){ // check roof
-                worldY = roof();
+                worldY = head();
                 jumpStrength = 0;
             }
             
             if(gp.cChecker.checkFloor(this) && jumpStrength <= 0){ //check floor
-                worldY = floor();
+                worldY = land();
                 jumping = false;
             }
         }
@@ -193,7 +193,7 @@ public class Player extends Entity{
             worldY += fallStrength;
             fallStrength++;
             if(gp.cChecker.checkFloor(this)){
-                worldY = floor();
+                worldY = land();
                 falling = false;
                 fallStrength = 0;
             }
@@ -202,6 +202,10 @@ public class Player extends Entity{
         //attack
         if(attacking == true){
             attacking();
+        }
+        
+        if(shooting == true){
+            shooting();
         }
     }
     
@@ -261,6 +265,10 @@ public class Player extends Entity{
             }
         }
     }
+    
+    public void shooting(){
+    }
+            
     //tuong tac object
     public void pickUpObject(int i){
        if(i != 999){
@@ -289,13 +297,8 @@ public class Player extends Entity{
     public void draw(Graphics2D g2){
         
         g2.setColor(Color.white);
-        
         g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
-        
-        //ve thanh hp
-        g2.setColor(Color.red);
-        g2.fillRect(gp.tileSize * 1, gp.tileSize * 2, hp * 3, gp.tileSize / 2);
-        
+            
         //ve demo
         if(attacking == true){
             if(attackNum == 1){
