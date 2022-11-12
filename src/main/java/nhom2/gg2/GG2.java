@@ -18,7 +18,7 @@ public class GG2 {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // dong chuong trinh khi tat cua so
         window.setResizable(false); // ko chinh kich co cua so
         window.setTitle("GG2"); // dat ten cua so
-        
+        window.setSize(100, 200);
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
         

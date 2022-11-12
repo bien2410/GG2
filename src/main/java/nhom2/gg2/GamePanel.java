@@ -25,8 +25,8 @@ public class GamePanel extends JPanel implements Runnable{
     
     public final int maxScreenCol = 24;
     public final int maxScreenRow = 16;
-    public final int screenWidth = tileSize * maxScreenCol;
-    public final int screenHeight = tileSize * maxScreenRow;
+    public final int screenWidth = tileSize * maxScreenCol; //1152
+    public final int screenHeight = tileSize * maxScreenRow; //768
     //chia man hinh game thanh 24tileSize * 16tileSize
     
     // World setting la map day
@@ -40,7 +40,7 @@ public class GamePanel extends JPanel implements Runnable{
     //tile
     TileManager tileM = new TileManager(this);
     //keyHandler
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     //Sound
     Sound music = new Sound();
     Sound se = new Sound();
@@ -61,7 +61,13 @@ public class GamePanel extends JPanel implements Runnable{
     //object
     public Entity[] obj = new Entity[10];
     
-    
+    //GAME STATE
+    public int gameState = 1;
+    public final int titleState = 0;
+    public final int playState = 1;
+    public final int pauseState = 2;
+    public final int dialogueState = 3;
+    public final int characterState = 4;
     
     public GamePanel(){
         
@@ -125,18 +131,27 @@ public class GamePanel extends JPanel implements Runnable{
     }
     
     public void update(){
-        
-        //update nhan vat
-        player.update();
-        for(int i = 0; i < monster.length; i++){
-            if(monster[i] != null){
-                monster[i].update();
+        if(gameState == playState){
+            //update nhan vat
+            player.update();
+            for(int i = 0; i < monster.length; i++){
+                if(monster[i] != null){
+                    if(monster[i].alive == true && monster[i].dying == false){
+                        monster[i].update();
+                    }
+                    if(monster[i].alive == false){
+                        monster[i] = null;
+                    }
+                }
+            }
+            if(bullet != null) {
+                bullet.update();
+                if(bullet.worldX == bullet.limitX) bullet = null;
+                else if(bullet.touch) bullet = null;
             }
         }
-        if(bullet != null) {
-            bullet.update();
-            if(bullet.worldX == bullet.limitX) bullet = null;
-            else if(bullet.touch) bullet = null;
+        if(gameState == pauseState){
+            //nothing
         }
     }
     
@@ -145,34 +160,39 @@ public class GamePanel extends JPanel implements Runnable{
         super.paintComponent(g);
         
         Graphics2D g2 = (Graphics2D)g;
-        
-        //ve tile trc khi ve nhan vat
-        tileM.draw(g2);
-        
-        //ve object
-        for(int i = 0; i < obj.length; i++){
-            if(obj[i] != null){
-                obj[i].draw(g2);            
+        if(gameState == titleState){
+            //ui.draw(g2);
+        }
+        else {
+            //ve tile trc khi ve nhan vat
+            tileM.draw(g2);
+            
+            //ve object
+            for(int i = 0; i < obj.length; i++){
+                if(obj[i] != null){
+                    
+                    obj[i].draw(g2);            
+                }
             }
-        }
-        
-        //ve nhan vat
-        player.draw(g2);
-        
-        //ve dan
-        if(bullet != null) {
-            bullet.draw(g2);
-        }
-        
-        //ve monster
-        for(int i = 0; i < monster.length; i++){
-            if(monster[i] != null){
-                monster[i].draw(g2);            
+
+            //ve nhan vat
+            player.draw(g2);
+
+            //ve dan
+            if(bullet != null) {
+                bullet.draw(g2);
             }
+
+            //ve monster
+            for(int i = 0; i < monster.length; i++){
+                if(monster[i] != null){
+                    monster[i].draw(g2);            
+                }
+            }
+            //ve UI
+            ui.draw(g2); // o day thanh mau con o ui
         }
-        //ve UI
-        ui.draw(g2);
-     
+        
         g2.dispose();
     }
     

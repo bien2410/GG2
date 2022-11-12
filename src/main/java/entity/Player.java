@@ -6,7 +6,11 @@ package entity;
 
 import bullet.*;
 import java.awt.*;
+import java.awt.image.*;
+import java.util.ArrayList;
 import nhom2.gg2.*;
+import object.*;
+
 
 /**
  *
@@ -19,7 +23,7 @@ public class Player extends Entity{
     public final int screenX;
     public final int screenY;
     
-    public int hasKey = 0;
+    //public int hasKey = 0;
     
     //Jump
     boolean jumping = false;
@@ -34,6 +38,13 @@ public class Player extends Entity{
     
     //shoot
     boolean shooting = false;
+    boolean shootingAnimation = false;
+    //image them
+    public BufferedImage attackHighLeft, attackHighRight;
+    
+    //INVENTORY
+    public ArrayList<Entity> inventory = new ArrayList<>();
+    public final int maxInventorySize = 20;
     
     public Player(GamePanel gp, KeyHandler keyH){
         
@@ -50,14 +61,11 @@ public class Player extends Entity{
         solidArea.height = 31; // chinh sua ne
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        
-        //attack hit detection, chinh sua sau nay tuy vu khi
-        attackArea.width = gp.tileSize * 2;
-        attackArea.height = gp.tileSize * 2;
-        
+              
         setDefaultValues();
-        //getPlayerImage();
-        //getPlayerAttackImage();
+        getPlayerImage();
+        getPlayerAttackImage();
+        setItems();
     }
     
     public void setDefaultValues(){
@@ -66,26 +74,56 @@ public class Player extends Entity{
         worldY = gp.tileSize * (gp.maxWorldRow - 6); // co 5 hang dat ben duoi
         
         speed = 5;
-        hp = 100;
+        maxHp = 100;
+        hp = maxHp;
+        level = 1;
+        strength = 1;
+        dexterity = 1;
+        exp = 0;
+        nextLevelExp = 5;
+        coin = 0;
+        currentWeapon = new OBJ_Sword_Normal(gp);
+        currentShield = new OBJ_Shield_Wood(gp);
+        attack = getAttack();
+        defense = getDefense();
+    }
+    
+    public void setItems(){
+        
+        inventory.add(currentWeapon);
+        inventory.add(currentShield);
+        inventory.add(new OBJ_Key(gp));
+       
+    }
+    
+    public int getAttack(){
+        attackArea = currentWeapon.attackArea;
+        return strength * currentWeapon.attackValue;
+    }
+    
+    public int getDefense(){
+        return dexterity * currentShield.defenseValue;
     }
     
     //nhap anh dau vao
     public void getPlayerImage(){
         //dien duong dan
-        jump1 = setup("", gp.tileSize, gp.tileSize);
-        jump2 = setup("", gp.tileSize, gp.tileSize);
-        left1 = setup("", gp.tileSize, gp.tileSize);
-        left2 = setup("", gp.tileSize, gp.tileSize);
-        right1 = setup("", gp.tileSize, gp.tileSize);
-        right2 = setup("", gp.tileSize, gp.tileSize);
+        jump1 = setup("/player/leftJump", gp.tileSize, gp.tileSize);
+        jump2 = setup("/player/rightJump", gp.tileSize, gp.tileSize);
+        left1 = setup("/player/left", gp.tileSize, gp.tileSize);
+        left2 = setup("/player/leftMove", gp.tileSize, gp.tileSize);
+        right1 = setup("/player/right", gp.tileSize, gp.tileSize);
+        right2 = setup("/player/rightMove", gp.tileSize, gp.tileSize);
        
     }
-    public void getPlayerAttackImage(){ // change weapon 16*32
+    public void getPlayerAttackImage(){
         
-        attackLeft1 = setup("", gp.tileSize * 2, gp.tileSize);
-        attackLeft2 = setup("", gp.tileSize * 2, gp.tileSize);
-        attackRight1 = setup("", gp.tileSize * 2, gp.tileSize);
-        attackRight2 = setup("", gp.tileSize * 2, gp.tileSize);
+        attackLeft = setup("/player/leftAttack", gp.tileSize * 3, gp.tileSize);
+        attackRight = setup("/player/rightAttack", gp.tileSize * 3, gp.tileSize);
+        attackHighLeft = setup("/player/highLeftAttack", gp.tileSize * 3, gp.tileSize * 5);
+        attackHighRight = setup("/player/highRightAttack", gp.tileSize * 3, gp.tileSize * 5);
+        shootLeft = setup("/player/shootLeft", gp.tileSize, gp.tileSize);
+        shootRight = setup("/player/shootRight", gp.tileSize, gp.tileSize);
     }
     
     //2 ham xu ly cho muot
@@ -118,7 +156,8 @@ public class Player extends Entity{
             falling = true;
         }
         // check chem
-        if(keyH.jPressed == true && attacking == false){
+        if(keyH.jPressed == true && attacking == false && !invincible){
+            shootingAnimation = false;
             attacking = true;
             if(jumping == false && falling == false) attackNum = 1; //chem thuong
             else attackNum = 2; // nhay chem
@@ -126,13 +165,31 @@ public class Player extends Entity{
         //check co dang ban ko
         if(shooting == true && gp.bullet == null){
             shooting = false;
+            shootingAnimation = false;
         }
-        if(keyH.kPressed == true && attacking == false && shooting == false){
+        if(keyH.kPressed == true && attacking == false && shooting == false && !invincible){
             gp.bullet = new Bullet(gp);
             shooting = true;
+            shootingAnimation = true;
         }
-        if(keyH.leftPressed == true || keyH.rightPressed == true){ // hoat anh chi doi khi di chuyen
-                
+        
+        //monster
+        int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
+        touchMonster(monsterIndex);
+        
+        //invinvible
+        if(invincible == true){
+            invincibleCounter++;
+            if(invincibleCounter > 60){
+                invincible = false;
+                invincibleCounter = 0;
+            }
+        }
+        
+        spriteNum = 1;
+        if((keyH.leftPressed == true || keyH.rightPressed == true) && !attacking && !invincible){ // hoat anh chi doi khi di chuyen
+            shootingAnimation = false;
+            spriteNum = 2;
             if(keyH.leftPressed == true){
                 direction = "left";
                 
@@ -144,7 +201,7 @@ public class Player extends Entity{
             //collision
             collisionOn = false;
             gp.cChecker.checkTile(this);
-
+            
             //IF COLLISION IS FALSE, PLAYER CAN MOVE
             if(collisionOn == false){
                 
@@ -167,7 +224,8 @@ public class Player extends Entity{
             }*/
         }
         
-        if(keyH.upPressed == true){
+        if(keyH.upPressed == true && !invincible && !attacking){
+            shootingAnimation = false;
             if(gp.cChecker.checkFloor(this)){ // co the doi thanh check Jump de cuoi may
                 jumpStrength = 25;
                 jumping = true;
@@ -204,20 +262,20 @@ public class Player extends Entity{
             attacking();
         }
         
-        if(shooting == true){
+        /*if(shooting == true){
             shooting();
-        }
+        }*/
     }
     
     public void attacking(){
         //doi hoat anh, sua lai sau
-        spriteCounter++;
+        spriteCounterAttack++;
         
-        if(spriteCounter <= 5){
-            spriteNum = 1;
+        if(spriteCounterAttack <= 5){
+            spriteNumAttack = 1;
         }
-        if(spriteCounter > 5 && spriteCounter <= 10){
-            spriteNum = 2;
+        if(spriteCounterAttack > 5 && spriteCounterAttack <= 20){
+            spriteNumAttack = 2;
             
             //save the current worldX, worldY, solidArea
             int currentWorldX = worldX;
@@ -249,58 +307,152 @@ public class Player extends Entity{
                 }
             }
             int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
-            interacMonster(monsterIndex);
+            damageMonster(monsterIndex, "attack");
             
             worldX = currentWorldX;
             worldY = currentWorldY;
             solidArea.width = solidAreaWidth;
             solidArea.height = solidAreaHeight;
         }
-        if(spriteCounter > 10){
-            spriteNum = 1;
-            if(spriteCounter > 60){
-                spriteCounter = 0;
+        if(spriteCounterAttack > 20){
+            spriteNumAttack = 1;
+            if(spriteCounterAttack > 20){
+                spriteCounterAttack = 0;
                 attacking = false;
                 attackNum = 0;
             }
         }
     }
     
-    public void shooting(){
-    }
+    /*public void shooting(){
+    }*/
             
     //tuong tac object
     public void pickUpObject(int i){
        if(i != 999){
-           
-           String objectName = gp.obj[i].name;
-           switch(objectName){
-               case"Key":
-                   hasKey++;
-                   gp.obj[i] = null;
-                   gp.playSE(1);
-                   gp.ui.showMessage("nhat dc chia khoa");
-                   break;
+           String text;
+           if(inventory.size() != maxInventorySize){
+               
+               inventory.add(gp.obj[i]);
+               gp.playSE(1);
+               text = "Got a " + gp.obj[i].name + "!";
            }
+           else{
+               text = "You cannot carry any more!";
+           }
+           gp.ui.addMessage(text);
+           gp.obj[i] = null;
+           
         }
     }
     
     //tuong tac monster
-    public void interacMonster(int i){
+    public void damageMonster(int i, String s){
         if(i != 999){
+            int damage = 0;
+            switch(s){
+                case"attack":
+                    damage = attack - gp.monster[i].defense;
+                    break;
+                case"shoot":
+                    damage = gp.bullet.attack; // dame chuan
+                    break;
+            }
+            if(gp.monster[i].invincible == false){
+                if(damage < 0) {
+                    damage = 0;
+                }
+                gp.monster[i].hp -= damage;
+                gp.monster[i].invincible = true;
+                gp.monster[i].damageReaction();
+                gp.playSE(2);
+                gp.ui.addMessage(damage + " damage!");
+                if(gp.monster[i].hp <= 0){
+                    gp.monster[i].dying = true;
+                    gp.ui.addMessage("killed the " + gp.monster[i].name);
+                    exp += gp.monster[i].exp;
+                    gp.ui.addMessage("+" + gp.monster[i].exp + " exp");
+                    checkLevelUp();
+                }
+            }
+        }
+    }
+    
+    public void touchMonster(int i){
+        if(i != 999 && gp.monster[i].invincible == false){
+   
+            if(invincible == false){
+                
+                int damage = gp.monster[i].attack - defense;
+                if(damage < 0){
+                    damage = 0;
+                }
+                hp -= damage;
+                invincible = true;
+                gp.playSE(3);
+                gp.ui.addMessage("-" + damage + " hp");
+            }
+            //khi dung sat tuong se bi bug
+            //khi bi sat thuong
+            if(direction.equals("right")) worldX -= 10; // tam dc
+            else worldX += 10;
+            worldY -= 30;
             
-            gp.ui.showMessage("chem trung r");
+        }
+    }
+    
+    public void checkLevelUp(){
+        
+        if(exp >= nextLevelExp){
+            
+            level++;
+            nextLevelExp = nextLevelExp * 2;
+            maxHp += 10;
+            hp = maxHp;
+            strength++;
+            dexterity++;
+            attack = getAttack();
+            defense = getDefense();
+            gp.playSE(4);
+            gp.ui.addMessage("Level up!");
+        }
+    }
+    
+    public void selectItem(){
+        
+        int itemIndex = gp.ui.getItemIndexOnSlot();
+        
+        if(itemIndex < inventory.size()){
+            
+            Entity selectedItem = inventory.get(itemIndex);
+            
+            if(selectedItem.type == type_weapon){
+                
+                currentWeapon = selectedItem;
+                attack = getAttack();
+                //getPlayerAttackImage();
+            }
+            if(selectedItem.type == type_shield){
+                
+                currentShield = selectedItem;
+                defense = getDefense();
+            }
+            if(selectedItem.type == type_consumable){
+                
+                selectedItem.use(this);
+                inventory.remove(itemIndex);
+            }
         }
     }
     
     // ve nhan vat
     public void draw(Graphics2D g2){
         
-        g2.setColor(Color.white);
-        g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
+        /*g2.setColor(Color.white);
+        g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);*/
             
         //ve demo
-        if(attacking == true){
+        /*if(attacking == true){
             if(attackNum == 1){
                 if("right".equals(direction)){
                     g2.setColor(Color.orange);
@@ -321,28 +473,111 @@ public class Player extends Entity{
                     g2.drawRect(screenX - gp.tileSize * 2, screenY - gp.tileSize * 2, gp.tileSize * 3, gp.tileSize * 5);
                 }
             }
-        }
-        /*sau nay ve nv o day
+        }*/
+        //sau nay ve nv o day
         BufferedImage image = null;
-        switch(direction){
-            case"left":
-                if(spriteNum == 1){
-                    image = left1;
+        int inx = screenX;
+        int iny = screenY;
+        if(!attacking){
+            if(!jumping){
+                switch(direction){
+                    case"left":
+                        if(spriteNum == 1){
+                            image = left1;
+                        }
+                        if(spriteNum == 2){
+                            image = left2;
+                        }
+                        break;
+                    case"right":
+                        if(spriteNum == 1){
+                            image = right1;
+                        }
+                        if(spriteNum == 2){
+                            image = right2;
+                        }
+                        break;
                 }
-                if(spriteNum == 2){
-                    image = left2;
+            }
+            else{
+                switch(direction){
+                    case"left":
+                        image = jump1;
+                        break;
+                    case"right":
+                        image = jump2;
+                        break;
                 }
-                break;
-            case"right":
-                if(spriteNum == 1){
-                    image = right1;
+
+            }
+            if(shootingAnimation){
+                switch(direction){
+                    case"left":
+                        image = shootLeft;
+                        break;
+                    case"right":
+                        image = shootRight;
+                        break;
                 }
-                if(spriteNum == 2){
-                    image = right2;
-                }
-                break;
+            }
         }
-        g2.drawImage(image, screenX, screenY, null);
-        */
+        else{
+            if(attackNum == 1){
+                switch(direction){
+                    case"left":
+                        if(spriteNumAttack == 1){
+                            image = left1;
+                        }
+                        if(spriteNumAttack == 2){
+                            image = attackLeft;
+                            inx -= gp.tileSize * 2;
+                        }
+                        break;
+                    case"right":
+                        if(spriteNumAttack == 1){
+                            image = right1;
+                        }
+                        if(spriteNumAttack == 2){
+                            image = attackRight;
+                        }
+                        break;
+                }
+            }
+            else{
+                switch(direction){
+                    case"left":
+                        if(spriteNumAttack == 1){
+                            image = jump1;
+                        }
+                        if(spriteNumAttack == 2){
+                            image = attackHighLeft;
+                            inx -= gp.tileSize * 2;
+                            iny -= gp.tileSize * 2;
+                        }
+                        break;
+                    case"right":
+                        if(spriteNumAttack == 1){
+                            image = jump2;
+                        }
+                        if(spriteNumAttack == 2){
+                            image = attackHighRight;
+                            iny -= gp.tileSize * 2;
+                        }
+                        break;
+                }
+            }
+        }
+        if(invincible){
+            //g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+            if(invincibleAnimation == true){
+                image = null;
+                invincibleAnimation = false;
+            }
+            else{
+                invincibleAnimation = true;
+            }
+        }
+        g2.drawImage(image, inx, iny, null);
+        //g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
 }

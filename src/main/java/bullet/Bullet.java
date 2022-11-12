@@ -21,6 +21,7 @@ public class Bullet extends Entity{
         worldX = gp.player.worldX;
         worldY = gp.player.worldY;
         speed = 7;
+        attack = 2;
         direction = gp.player.direction;
         if(direction.equals("right")){
             limitX = worldX + gp.tileSize * 10;
@@ -28,13 +29,14 @@ public class Bullet extends Entity{
         if(direction.equals("left")){
             limitX = worldX - gp.tileSize * 10;
         }
-        image = setup("/objects/key", gp.tileSize, gp.tileSize);
+        image = setup("/bullet/phitieu", gp.tileSize, gp.tileSize);
     }
     public void update(){
         int monsterIndex = gp.cChecker.checkEntity(this, gp.monster);
             if(monsterIndex != 999){
                 touch = true;
-                gp.ui.showMessage("ban trung");
+                gp.player.damageMonster(monsterIndex, "shoot");
+            
         }
         if(direction.equals("right")){
             worldX += speed;
