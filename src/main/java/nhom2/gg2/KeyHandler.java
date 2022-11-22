@@ -9,16 +9,15 @@ package nhom2.gg2;
  * @author ADMIN
  */
 import java.awt.event.*;
+import scene.*;
 public class KeyHandler implements KeyListener {
     
     public boolean upPressed, downPressed, leftPressed, rightPressed;
-    public boolean jPressed, kPressed, enterPressed;
+    public boolean jPressed, kPressed, ePressed, enterPressed;
     public GamePanel gp;
     public KeyHandler(GamePanel gp) {
         this.gp = gp;
     }
-    
-    
     
     @Override
     public void keyTyped(KeyEvent e) {
@@ -53,6 +52,11 @@ public class KeyHandler implements KeyListener {
        else if(gp.gameState == gp.characterState){
            characterState(code);
        }
+       
+       //CHARACTER STATE
+       else if(gp.gameState == gp.revivalState){
+           revivalState(code);
+       }
     }
 
     @Override
@@ -78,38 +82,22 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_K){
             kPressed = false;
         }
-        if(code == KeyEvent.VK_K){
+        if(code == KeyEvent.VK_E){
+            ePressed = false;
+        }
+        if(code == KeyEvent.VK_ENTER){
             enterPressed = false;
         }
     }
     
     public void titleState(int code){
-        
-        if(code == KeyEvent.VK_W){
-            gp.ui.commandNum--;
-            if(gp.ui.commandNum > 0){
-                gp.ui.commandNum = 2;
-            }
-        }
-        if(code == KeyEvent.VK_S){
-            gp.ui.commandNum++;
-            if(gp.ui.commandNum > 2){
-                gp.ui.commandNum = 0;
-            }
-        }
-        
+       
         if(code == KeyEvent.VK_ENTER){
-            if(gp.ui.commandNum == 0){
-                gp.gameState = gp.playState;
+            if(!gp.tit.isEmpty()){
+                gp.ui.currentTitle = gp.tit.poll();
             }
-            if(gp.ui.commandNum == 1){
-                //add later
-            }
-            if(gp.ui.commandNum == 2){
-                System.exit(0);
-            }
+            else gp.gameState = gp.playState;
         }
-        
     }
     
     public void playState(int code){
@@ -131,6 +119,9 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_K){
             kPressed = true;
         }
+        if(code == KeyEvent.VK_E){
+            ePressed = true;
+        }
         if(code == KeyEvent.VK_ENTER){
             enterPressed = true;
         }
@@ -149,7 +140,7 @@ public class KeyHandler implements KeyListener {
     }
     
     public void dialogueState(int code){
-        if(code == KeyEvent.VK_ENTER){
+        if(code == KeyEvent.VK_ENTER){          
             gp.gameState = gp.playState;
         }
     }
@@ -184,4 +175,19 @@ public class KeyHandler implements KeyListener {
         }
     }
     
+    public void revivalState(int code){
+        if(code == KeyEvent.VK_ENTER){
+            if(gp.player.coin >= gp.timeRevival / 60){
+                gp.player.coin -= gp.timeRevival / 60;
+                gp.revival();
+            }
+        }
+    }
+    
+    public void gameOverState(int code){
+        if(code == KeyEvent.VK_ENTER){
+            gp.gameState = gp.playState;
+            gp.revival();
+        }
+    }
 }

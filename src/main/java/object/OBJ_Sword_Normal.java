@@ -18,12 +18,12 @@ public class OBJ_Sword_Normal extends Entity{
         super(gp);
         
         type = type_weapon;
-        name = "Normal Sword";
+        name = "Kiếm gỉ";
         image = setup("/objects/sword_normal", gp.tileSize, gp.tileSize);
-        attackValue = 1;
+        attackValue = 100;
         attackArea.width = gp.tileSize * 2;
         attackArea.height = gp.tileSize * 2;
-        description = "[" + name + "]\nAn old sword.";
+        description = "[" + name + "]\nĐồ cùi.";
     }
     
 }

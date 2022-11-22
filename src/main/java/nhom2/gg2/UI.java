@@ -17,15 +17,17 @@ public class UI {
     
     GamePanel gp;
     Graphics2D g2;
-    Font TNR_40;
+    public Font TNR_40;
     BufferedImage keyImage;
     public boolean messageOn = false;
     
     ArrayList<String> message = new ArrayList<>();
     ArrayList<Integer> messageCounter = new ArrayList<>();
+    public String currentMission = "";
     //public boolean gameFinished = false; luc day gameThread = null; 
     public String currentDialogue = "";
-    public int commandNum = 0;
+    public String currentTitle = "Ấn phím TAB sau đó nhấn ENTER để bắt đầu";
+    //public int commandNum = 0;
     public int titleScreenState = 0;
     public int slotCol = 0;
     public int slotRow = 0;
@@ -45,7 +47,7 @@ public class UI {
     
     public void drawMessage(){
         
-        int messageX = gp.tileSize;
+        int messageX = gp.tileSize / 2;
         int messageY = gp.tileSize * 4;
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
         
@@ -70,6 +72,23 @@ public class UI {
         }
     }
     
+    public void drawMission(){
+        drawSubWindow(gp.tileSize * 20, gp.tileSize * 7 / 2, gp.tileSize * 4, gp.tileSize * 2);
+        g2.setColor(Color.white);
+        currentMission = gp.mission.currentMission;
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+        g2.drawString("NHIỆM VỤ", gp.tileSize * 21, gp.tileSize * 4 + 5);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 10F));
+        int messageX = gp.tileSize * 20 + 20;
+        int messageY = gp.tileSize * 4 + gp.tileSize / 2 + 5;
+        if(currentMission != null){
+            for(String line : currentMission.split("\n")){
+                g2.drawString(line, messageX, messageY);
+                messageY += 10;
+            }
+        }
+    }
+    
     public void draw(Graphics2D g2){
         
         this.g2 = g2;
@@ -78,20 +97,22 @@ public class UI {
             /*
             g2.setFont(TNR_40);
             g2.setColor(Color.white);
-            g2.drawImage(keyImage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(keyI/*mage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
             g2.drawString("x " + gp.player.hasKey, 74, 65);
             */
             //ve hp player
-            g2.setColor(Color.red);
+            /*g2.setColor(Color.red);
             g2.fillRect(gp.tileSize * 1, gp.tileSize * 2, gp.player.hp * 3, gp.tileSize / 2);
 
-            g2.setColor(Color.white);
+            g2.setColor(Color.white);*/
             //MESSAGE
             drawMessage();
+            //MISSION
+            drawMission();
         }
-        //PLAY STATE
-        if(gp.gameState == gp.playState){
-            // do playState stuff late
+        //TITLE STATE
+        if(gp.gameState == gp.titleState){
+            drawTitleScreen();
         }
         
         // PAUSE STATE
@@ -108,6 +129,29 @@ public class UI {
         if (gp.gameState == gp.characterState){
             drawCharacterScreen(); // con phai dung gamepanel nua
             drawInventory();
+        }
+        
+        // revivalSTATE
+        if(gp.gameState == gp.revivalState){
+            drawRevivalScreen();
+        }
+    }
+    
+    public void drawTitleScreen(){
+        int x = gp.tileSize * 2;
+        int y = gp.tileSize / 2;
+        int width = gp.screenWidth - (gp.tileSize * 4);
+        int height = gp.tileSize * 4;
+        drawSubWindow(x, y, width, height);
+
+        g2.setFont(TNR_40);
+        x += gp.tileSize;
+        y += gp.tileSize;
+       if(currentTitle != ""){
+            for(String line : currentTitle.split("\n")){
+                 g2.drawString(line, x, y);
+                y += 40;
+            }
         }
     }
     
@@ -145,7 +189,7 @@ public class UI {
         // CREATE A FRAME
         final int frameX = gp.tileSize;
         final int frameY = gp.tileSize;
-        final int frameWidth = gp.tileSize * 5;
+        final int frameWidth = gp.tileSize * 8;
         final int frameHeight = gp. tileSize * 10;
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
         
@@ -158,27 +202,27 @@ public class UI {
         final int lineHeight = 35;
         
         //NAMES
-        g2.drawString("Level", textX, textY);
+        g2.drawString("Cấp", textX, textY);
         textY += lineHeight;
-        g2.drawString("HP", textX, textY);
+        g2.drawString("Máu", textX, textY);
         textY += lineHeight;
-        g2.drawString("Strength", textX, textY);
+        g2.drawString("Năng lượng", textX, textY);
         textY += lineHeight;
-        g2.drawString("Dexterity", textX, textY);
+        g2.drawString("Sức mạnh", textX, textY);
         textY += lineHeight;
-        g2.drawString("Attack", textX, textY);
+        g2.drawString("Bền bỉ", textX, textY);
         textY += lineHeight;
-        g2.drawString("Defense", textX, textY);
+        g2.drawString("Tấn công", textX, textY);
         textY += lineHeight;
-        g2.drawString("Exp", textX, textY);
+        g2.drawString("Phòng thủ", textX, textY);
         textY += lineHeight;
-        g2.drawString("Next Level", textX, textY);
+        g2.drawString("Kinh nghiệm", textX, textY);
         textY += lineHeight;
-        g2.drawString("Coin", textX, textY);
+        g2.drawString("Cấp kế tiếp cần", textX, textY);
         textY += lineHeight + 20;
-        g2.drawString("Weapon", textX, textY);
+        g2.drawString("Vũ khí", textX, textY);
         textY += lineHeight + 15;
-        g2.drawString("Shield", textX, textY);
+        g2.drawString("Khiên", textX, textY);
         textY += lineHeight;
         
         //VALUE
@@ -193,6 +237,11 @@ public class UI {
         textY += lineHeight;
 
         value = String.valueOf(gp.player.hp + "/" + gp.player.maxHp);
+        textX = getXforAlignToRightText(value, tailX);
+        g2.drawString(value, textX, textY);
+        textY += lineHeight;
+        
+        value = String.valueOf(gp.player.mana + "/" + gp.player.maxMana);
         textX = getXforAlignToRightText(value, tailX);
         g2.drawString(value, textX, textY);
         textY += lineHeight;
@@ -227,20 +276,57 @@ public class UI {
         g2.drawString(value, textX, textY);
         textY += lineHeight;
         
-        value = String.valueOf(gp.player.coin);
-        textX = getXforAlignToRightText(value, tailX);
-        g2.drawString(value, textX, textY);
-        textY += lineHeight;
-        
         g2.drawImage(gp.player.currentWeapon.image, tailX - gp.tileSize, textY - 14, null);
         textY += gp.tileSize;
         g2.drawImage(gp.player.currentShield.image, tailX - gp.tileSize, textY - 14, null);
     }
     
+    public void drawRevivalScreen(){
+        g2.setColor((new Color(0, 0, 0, 150)));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        
+        int x;
+        int y;
+        String text;
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 50f));
+        text = "Hồi sinh sau: " + gp.counterRevival / 60 + "s";
+        g2.setColor(Color.white);
+        x = getXforCenteredText(text);
+        y = gp.tileSize * 5;
+        g2.drawString(text, x, y);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
+        text = "Hoặc mất: " + gp.timeRevival / 60 + " xu để hồi sinh ngay lập tức -> Bấm ENTER";
+        g2.setColor(Color.yellow);
+        x = getXforCenteredText(text);
+        y += gp.tileSize * 2;
+        g2.drawString(text, x, y);
+    }
+    
+    public void drawGameOverScreen(){
+        
+        g2.setColor((new Color(0, 0, 0, 150)));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        
+        int x;
+        int y;
+        String text;
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 110f));
+        
+        text = "Game Over";
+        //Shadow
+        g2.setColor(Color.black);
+        x = getXforCenteredText(text);
+        y = gp.tileSize * 4;
+        g2.drawString(text, x, y);
+        //Main
+        g2.setColor(Color.white);
+        g2.drawString(text, x - 4, y - 4);
+    }
+    
     public void drawInventory(){
         
         //frame
-        int frameX = gp.tileSize * 9;
+        int frameX = gp.tileSize * 12;
         int frameY = gp.tileSize;
         int frameWidth = gp.tileSize * 6;
         int frameHeight = gp.tileSize * 5;

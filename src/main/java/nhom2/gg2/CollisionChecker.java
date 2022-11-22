@@ -5,6 +5,8 @@
 package nhom2.gg2;
 
 import entity.*;
+import java.awt.*;
+import object.OBJ_Coin;
 
 /**
  *
@@ -51,16 +53,33 @@ public class CollisionChecker {
                 break;*/
             case"left":
                 entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
+                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
+                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;
                 }
                 break;
             case"right":
                 entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
+                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
+                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
+                if((gp.tileM.tile[tileNum1].name.equals("door") && gp.tileM.tile[tileNum1].collision == true)|| (gp.tileM.tile[tileNum2].name.equals("door") && gp.tileM.tile[tileNum2].collision == true)){
+                    boolean b = false;
+                    int tmpi = 0;
+                    for(int index = 0; index < gp.player.inventory.size(); index++){
+                        if(gp.player.inventory.get(index).name.equals("Key")) {
+                            tmpi = index;
+                            b = true;
+                            break;
+                        }
+                    }
+                    if(b == true){
+                        gp.player.inventory.remove(tmpi);
+                        if(gp.tileM.tile[tileNum1].name.equals("door")) gp.tileM.tile[tileNum1].collision = false;
+                        if(gp.tileM.tile[tileNum2].name.equals("door")) gp.tileM.tile[tileNum2].collision = false;
+                    }
+                    else gp.ui.addMessage("ban can chia khoa de mo cong");
+                }
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;
                 }
@@ -81,8 +100,8 @@ public class CollisionChecker {
         int entityBottomRow = entityBottomWorldY / gp.tileSize;
         
         int tileNum1, tileNum2;
-        tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-        tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
+        tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
+        tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
         if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
             return true;
         }
@@ -103,8 +122,8 @@ public class CollisionChecker {
         
         
         int tileNum1, tileNum2;
-        tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
-        tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
+        tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
+        tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
         if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
             return true;
         }
@@ -115,20 +134,20 @@ public class CollisionChecker {
         
         int index = 999;
         
-        for(int i = 0; i < gp.obj.length; i++){
+        for(int i = 0; i < gp.obj[1].length; i++){
             
-            if(gp.obj[i] != null){
+            if(gp.obj[gp.currentMap][i] != null){
                 
                 //Get entity's solid area position
                 entity.solidArea.x += entity.worldX;
                 entity.solidArea.y += entity.worldY;
                 
                 //Get the object's solid area position
-                gp.obj[i].solidArea.x += gp.obj[i].worldX;
-                gp.obj[i].solidArea.y += gp.obj[i].worldY;
+                gp.obj[gp.currentMap][i].solidArea.x += gp.obj[gp.currentMap][i].worldX;
+                gp.obj[gp.currentMap][i].solidArea.y += gp.obj[gp.currentMap][i].worldY;
                 
-                if(entity.solidArea.intersects(gp.obj[i].solidArea)){ // thay cho 1 doan code cua player, nhung ko thay dc
-                    if(gp.obj[i].collision == true){
+                if(entity.solidArea.intersects(gp.obj[gp.currentMap][i].solidArea)){ // thay cho 1 doan code cua player, nhung ko thay dc
+                    if(gp.obj[gp.currentMap][i].collision == true){
                         entity.collisionOn = true; // bo di, check collision nay phai khi di chuyen, nhay kho lam vl
                     }
                     if(player == true){ // neu cai khac cham vao thi ko tuong tac: npc, monster
@@ -137,38 +156,133 @@ public class CollisionChecker {
                 }
                 entity.solidArea.x = entity.solidAreaDefaultX;
                 entity.solidArea.y = entity.solidAreaDefaultY;
-                gp.obj[i].solidArea.x = gp.obj[i].solidAreaDefaultX;
-                gp.obj[i].solidArea.y = gp.obj[i].solidAreaDefaultY;
+                gp.obj[gp.currentMap][i].solidArea.x = gp.obj[gp.currentMap][i].solidAreaDefaultX;
+                gp.obj[gp.currentMap][i].solidArea.y = gp.obj[gp.currentMap][i].solidAreaDefaultY;
             }
         }
         return index;
     }
-    //NPC OR MONSTER
-    public int checkEntity(Entity entity, Entity[] target){
+    
+    public int checkChest(Entity entity){
         
         int index = 999;
         
-        for(int i = 0; i < target.length; i++){
+        for(int i = 0; i < gp.chest[1].length; i++){
             
-            if(target[i] != null){
+            if(gp.chest[gp.currentMap][i] != null){
+                
+                //Get entity's solid area position
+                entity.solidArea.x += entity.worldX;
+                entity.solidArea.y += entity.worldY;
+                
+                //Get the object's solid area position
+                gp.chest[gp.currentMap][i].solidArea.x += gp.chest[gp.currentMap][i].worldX;
+                gp.chest[gp.currentMap][i].solidArea.y += gp.chest[gp.currentMap][i].worldY;
+                
+                if(entity.solidArea.intersects(gp.chest[gp.currentMap][i].solidArea)){ // thay cho 1 doan code cua player, nhung ko thay dc
+                   
+                        index = i;
+                    
+                }
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                gp.chest[gp.currentMap][i].solidArea.x = gp.chest[gp.currentMap][i].solidAreaDefaultX;
+                gp.chest[gp.currentMap][i].solidArea.y = gp.chest[gp.currentMap][i].solidAreaDefaultY;
+            }
+        }
+        return index;
+    }
+    
+    public int checkCoin(Entity entity){
+        int index = 999;
+        
+        for(int i = 0; i < gp.coin.size(); i++){
+            
+            if(gp.coin.get(i) != null){
+                
+                //Get entity's solid area position
+                entity.solidArea.x += entity.worldX;
+                entity.solidArea.y += entity.worldY;
+                
+                //Get the object's solid area position
+                gp.coin.get(i).solidArea.x += gp.coin.get(i).worldX;
+                gp.coin.get(i).solidArea.y += gp.coin.get(i).worldY;
+                
+                if(entity.solidArea.intersects(gp.coin.get(i).solidArea)){ // thay cho 1 doan code cua player, nhung ko thay dc
+                    index = i;
+                }
+                entity.solidArea.x = entity.solidAreaDefaultX;
+                entity.solidArea.y = entity.solidAreaDefaultY;
+                gp.coin.get(i).solidArea.x = gp.coin.get(i).solidAreaDefaultX;
+                gp.coin.get(i).solidArea.y = gp.coin.get(i).solidAreaDefaultY;
+            }
+        }
+        return index;
+    }
+    
+    //NPC OR MONSTER
+    public int checkEntity(Entity entity, Entity[][] target){
+        
+        int index = 999;
+        
+        for(int i = 0; i < target[1].length; i++){
+            
+            if(target[gp.currentMap][i] != null){
                 
                 //Get entity's solid area position
                 entity.solidArea.x += entity.worldX;
                 entity.solidArea.y += entity.worldY;
                 
                 //Get the target's solid area position
-                target[i].solidArea.x += target[i].worldX;
-                target[i].solidArea.y += target[i].worldY;
+                target[gp.currentMap][i].solidArea.x += target[gp.currentMap][i].worldX;
+                target[gp.currentMap][i].solidArea.y += target[gp.currentMap][i].worldY;
                 
-                if(entity.solidArea.intersects(target[i].solidArea)){ 
+                if(entity.solidArea.intersects(target[gp.currentMap][i].solidArea)){ 
                     index = i;
                 }
                 entity.solidArea.x = entity.solidAreaDefaultX;
                 entity.solidArea.y = entity.solidAreaDefaultY;
-                target[i].solidArea.x = target[i].solidAreaDefaultX;
-                target[i].solidArea.y = target[i].solidAreaDefaultY;
+                target[gp.currentMap][i].solidArea.x = target[gp.currentMap][i].solidAreaDefaultX;
+                target[gp.currentMap][i].solidArea.y = target[gp.currentMap][i].solidAreaDefaultY;
             }
         }
         return index;
+    }
+    
+    public boolean checkPlayer(Entity entity){
+        boolean ans = false;
+        //Get entity's solid area position
+        entity.solidArea.x += entity.worldX;
+        entity.solidArea.y += entity.worldY;
+                
+        //Get the target's solid area position
+        gp.player.solidArea.x += gp.player.worldX;
+        gp.player.solidArea.y += gp.player.worldY;
+                
+        if(entity.solidArea.intersects(gp.player.solidArea)){ 
+                ans = true;
+        }
+        entity.solidArea.x = entity.solidAreaDefaultX;
+        entity.solidArea.y = entity.solidAreaDefaultY;
+        gp.player.solidArea.x = gp.player.solidAreaDefaultX;
+        gp.player.solidArea.y = gp.player.solidAreaDefaultY;
+            
+    
+        return ans;
+    }
+    
+    public boolean detectPlayer(Rectangle r){
+        boolean ans = false;
+        gp.player.solidArea.x += gp.player.worldX;
+        gp.player.solidArea.y += gp.player.worldY;
+                
+        if(r.intersects(gp.player.solidArea)){ 
+                ans = true;
+        }
+        
+        gp.player.solidArea.x = gp.player.solidAreaDefaultX;
+        gp.player.solidArea.y = gp.player.solidAreaDefaultY;
+        if(gp.player.hide == true) ans = false;
+        return ans;
     }
 }

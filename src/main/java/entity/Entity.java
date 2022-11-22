@@ -7,6 +7,7 @@ package entity;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.util.*;
 import javax.imageio.*;
 import nhom2.gg2.*;
 
@@ -25,6 +26,9 @@ public class Entity {
     public int speed;
     public int hp;
     public int maxHp;
+    public int mana;
+    public int maxMana;
+    public int manaCounter = 0;
     public int level;
     public int strength;
     public int dexterity;
@@ -45,25 +49,27 @@ public class Entity {
     public final int type_shield = 2;
     public final int type_consumable = 3;
     
-    public boolean alive = true;
+    /*public boolean alive = true;
     public boolean dying = false;
     public int dyingCounter = 0;
     public boolean hpBarOn = false;
-    public int hpBarCounter = 0;
+    public int hpBarCounter = 0;*/
     
     //image
     public BufferedImage jump1, jump2, left1, left2, right1, right2, down1, down2, up1, up2; // anh di chuyen
     public BufferedImage attackLeft, attackRight, shootLeft, shootRight; // anh tan cong
     public BufferedImage image; // anh object or tile,..
-    public String direction = "right"; // huong quay mat
+    public ArrayList<BufferedImage> left,right,attLeft,attRight,jumpLeft,jumpRight; 
     
+    public String direction = "right"; // huong quay mat
+    public String direction2 = "";
     // bien de chinh hoat anh
     public int spriteCounter = 0; // bien dem time doi anh
     public int spriteNum = 1; // bien doi anh
     public int spriteCounterAttack = 0; // bien dem time doi anh
     public int spriteNumAttack = 1; // bien doi anh
     public int actionLockCounter; //monster or npc di chuyen random
-    
+    public int actionLockCounter2;
     public boolean invincible = false;
     public int invincibleCounter = 0;
     public boolean invincibleAnimation = true;
@@ -89,7 +95,16 @@ public class Entity {
     }
     
     public void speak(){ //npc
-        
+        if(!gp.dia.isEmpty()){
+            gp.ui.currentDialogue = gp.dia.poll();
+            if(gp.dia.size() == 0){
+                gp.player.speaking = false;
+            }
+        }
+        else{
+            gp.ui.currentDialogue = "Còn không mau đi làm nhiệm vụ";
+            gp.player.speaking = false;
+        }
     }
     
     public void use(Entity entity){

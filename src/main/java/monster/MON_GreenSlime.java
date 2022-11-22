@@ -14,12 +14,12 @@ import nhom2.gg2.*;
  *
  * @author ADMIN
  */
-public class MON_GreenSlime extends Entity{
+public class MON_GreenSlime extends monster{
 
-    public MON_GreenSlime(GamePanel gp) {
-        super(gp);
+    public MON_GreenSlime(GamePanel gp, int x, int y) {
+        super(gp, x, y);
         
-        name = "Green Slime";
+        name = "Giải tích";
         speed = 2; 
         maxHp = 10;
         hp = maxHp;
@@ -46,55 +46,38 @@ public class MON_GreenSlime extends Entity{
         right2 = setup("/monster/anh2", gp.tileSize, gp.tileSize);
     }
     
-    public void setAction(){
-        
-        actionLockCounter++;
-        
-        if(actionLockCounter == 30){
-            
-            Random random = new Random();
-            int i = random.nextInt(100) + 1; // random tu 1 -> 100
-            
-            if(i <= 50){
-                direction = "right";
-            }
-            else if(i > 50){
-                direction = "left";
-            }
-            
-            actionLockCounter = 0;
-        }
-    }
-    
     public void damageReaction(){
-        
+        //chay di
         actionLockCounter = 0;
         direction = gp.player.direction;
     }
     //demo
     public void update(){
-        setAction();
-        collisionOn = false;
-        gp.cChecker.checkTile(this);
-        //roi
-        if(gp.cChecker.checkFloor(this) == false) {
-            collisionOn = true;
-            worldY++;
-        }
-        if(collisionOn == false){
-            if(direction.equals("right")) worldX += speed;
-            if(direction.equals("left")) worldX -= speed;
-        }
-       
-        spriteCounter++;
-        if(spriteCounter > 30){ //cu 10/FPS s thay doi hoat anh 1 lan 
-            if(spriteNum == 1){
-                spriteNum = 2;
+        if(invincible == false){
+            setAction();
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+            //roi
+            if(gp.cChecker.checkFloor(this) == false) {
+                collisionOn = true;
+                worldY++;
             }
-            else if(spriteNum == 2){
-                spriteNum = 1;
+            if(collisionOn == false){
+                if(direction.equals("right")) worldX += speed;
+                if(direction.equals("left")) worldX -= speed;
             }
-            spriteCounter = 0;
+
+            checkMove();
+            spriteCounter++;
+            if(spriteCounter > 30){ //cu 10/FPS s thay doi hoat anh 1 lan 
+                if(spriteNum == 1){
+                    spriteNum = 2;
+                }
+                else if(spriteNum == 2){
+                    spriteNum = 1;
+                }
+                spriteCounter = 0;
+            }
         }
         if(invincible == true){
             invincibleCounter++;
@@ -103,32 +86,7 @@ public class MON_GreenSlime extends Entity{
                 invincibleCounter = 0;
             }
         }
-    }
-    
-    public void dyingAnimation(Graphics2D g2){
-        
-        dyingCounter++;
-        
-        int i = 5;
-        
-        if(dyingCounter <= i) changeAlpha(g2, 0f);
-        if(dyingCounter > i && dyingCounter <= i * 2) changeAlpha(g2, 1f);    
-        if(dyingCounter > i * 2 && dyingCounter <= i * 3) changeAlpha(g2, 0f);
-        if(dyingCounter > i * 3 && dyingCounter <= i * 4) changeAlpha(g2, 1f);
-        if(dyingCounter > i * 4 && dyingCounter <= i * 5) changeAlpha(g2, 0f);
-        if(dyingCounter > i * 5 && dyingCounter <= i * 6) changeAlpha(g2, 1f);
-        if(dyingCounter > i * 6 && dyingCounter <= i * 7) changeAlpha(g2, 0f);
-        if(dyingCounter > i * 7 && dyingCounter <= i * 8) changeAlpha(g2, 1f);
-        
-        if(dyingCounter > i * 8){
-            dying = false;
-            alive = false;
-        }
-    }
-    
-    public void changeAlpha(Graphics2D g2, float alphaValue){ // chinh do mo
-        
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
+        checkDie();
     }
     
     public void draw(Graphics2D g2){
@@ -177,6 +135,11 @@ public class MON_GreenSlime extends Entity{
                     hpBarOn = false;
                 }
             }
+            
+            g2.setColor(Color.white);
+            g2.setFont(g2.getFont().deriveFont(10f));
+            g2.drawString(name, screenX + 5, screenY - 30);
+            
             if(invincible){
                 hpBarOn = true;
                 hpBarCounter = 0;
@@ -193,6 +156,7 @@ public class MON_GreenSlime extends Entity{
             }
            g2.drawImage(image, screenX, screenY, null);  
            changeAlpha(g2, 1f);
+           
         }
    
     }

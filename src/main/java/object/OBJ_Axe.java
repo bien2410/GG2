@@ -17,12 +17,12 @@ public class OBJ_Axe extends Entity{
         super(gp);
         
         type = type_weapon;
-        name = "Woodcutter's Axe";
+        name = "Rìu của Thỏ";
         image = setup("/objects/axe", gp.tileSize, gp.tileSize);
         attackValue = 2;
-        attackArea.width = gp.tileSize;
-        attackArea.height = gp.tileSize;
-        description = "[" + name + "]\nA bit rusty but still\ncan cut some trees.";
+        attackArea.width = gp.tileSize * 2;
+        attackArea.height = gp.tileSize * 2;
+        description = "[" + name + "]\nChiếc rìu thần.";
     }
     
 }

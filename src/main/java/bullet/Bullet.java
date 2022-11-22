@@ -21,7 +21,8 @@ public class Bullet extends Entity{
         worldX = gp.player.worldX;
         worldY = gp.player.worldY;
         speed = 7;
-        attack = 2;
+        attack = 1;
+        mana = 10;
         direction = gp.player.direction;
         if(direction.equals("right")){
             limitX = worldX + gp.tileSize * 10;
@@ -41,6 +42,7 @@ public class Bullet extends Entity{
         if(direction.equals("right")){
             worldX += speed;
             if(worldX > limitX) worldX = limitX;
+            
         }
         if(direction.equals("left")){
             worldX -= speed;

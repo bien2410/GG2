@@ -12,8 +12,10 @@ package nhom2.gg2;
 import bullet.*;
 import entity.*;
 import java.awt.*;
+import java.util.*;
 import javax.swing.*;
 import monster.*;
+import object.*;
 import tile.*;
 public class GamePanel extends JPanel implements Runnable{
     
@@ -33,14 +35,16 @@ public class GamePanel extends JPanel implements Runnable{
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
    
-    
+    public int maxMap = 10;
+    public int currentMap = 3;
     //FPS 
-    int FPS = 60;
+    public int FPS = 60;
     
     //tile
-    TileManager tileM = new TileManager(this);
+    public TileManager tileM = new TileManager(this);
     //keyHandler
-    KeyHandler keyH = new KeyHandler(this);
+    public KeyHandler keyH = new KeyHandler(this);
+    //public KeyHandler keyH;
     //Sound
     Sound music = new Sound();
     Sound se = new Sound();
@@ -55,35 +59,87 @@ public class GamePanel extends JPanel implements Runnable{
     //player
     public Player player = new Player(this, keyH);
     //bullet
+    //muon nhieu hon thi thay cai nay thanh arrayList
     public Bullet bullet = null;
     //monster
-    public Entity[] monster = new MON_GreenSlime[20];
-    //object
-    public Entity[] obj = new Entity[10];
+    public monster[][] monster = new monster[maxMap][20];
+    public monster[][] monsterR = new monster[maxMap][20];
     
+    public int countM[] = new int[9];
+    
+    //object
+    public Entity[][] obj = new Entity[maxMap][50];
+    //Chest
+    public OBJ_Chest[][] chest = new OBJ_Chest[maxMap][20];
+    //Coin
+    public ArrayList<OBJ_Coin> coin = new ArrayList<>();
+    //NPC
+    public NPC[][] npc = new NPC[maxMap][10];
+    //MISSION
+    public Mission mission = new Mission(this);
+    //dialogue
+    public Queue<String> dia = new LinkedList<>();
+    //title
+    public Queue<String> tit = new LinkedList<>();
+    public boolean speaking = true;
+    
+    public long timeRevival = 15 * 60;
+    public long counterRevival = timeRevival;
     //GAME STATE
-    public int gameState = 1;
+    public int gameState = 0;
     public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
     public final int dialogueState = 3;
     public final int characterState = 4;
-    
+    public final int revivalState = 5;
+    public final int gameOverState = 6;
     public GamePanel(){
         
-        this.setPreferredSize(new Dimension(screenWidth, screenHeight)); //kich co cua GamePanel
+        //this.setPreferredSize(new Dimension(screenWidth, screenHeight)); //kich co cua GamePanel
+        this.setSize(screenWidth, screenHeight);
         this.setBackground(Color.black); // mau cua nen 
         this.setDoubleBuffered(true); // cho phep su dung phuong thuc draw...
+        setText();
+        setMonsterCounter();
         // dau vao tu ban phim
         this.addKeyListener(keyH); 
         this.setFocusable(true);
+        //this.setupGame();
+        this.startGameThread();
+        //this.requestFocusInWindow();
+    }
     
+    public void setMonsterCounter(){
+        for(int i = 0; i < 9; i++) countM[i] = 0;
+    }
+    
+    public void setText(){
+        tit.add(".......................");
+        tit.add("Đây là ai tôi là đâu?. Chuyện gì đang xảy ra thế này");
+        tit.add("Mình nhớ là đang code PTIT đến phút thứ 181 mà");
+        dia.add("Mình ngủ thiếp đi và rồi ......");
+        dia.add("Đằng kia có 1 ông lão đến hỏi thử xem nào");
+        dia.add("Ấn A, D để di chuyển trái phải. W để nhảy\nẤn ENTER để tương tác với các vật thể và đối thoại");
+        dia.add("Giờ thì đi tìm ông Ôp nào");
+    }
+    
+    public void speak(){
+        if(!dia.isEmpty()){
+            ui.currentDialogue = dia.poll();
+            gameState = dialogueState;
+        }
+        else{
+            this.setupGame();
+            speaking = false;
+        }
     }
     
     public void setupGame(){
-        
-        aSetter.setObject();
+        //aSetter.setObject();
         aSetter.setMonster();
+        aSetter.setNpc();
+        aSetter.setChest();
         playMusic(0);
         stopMusic();
     }
@@ -92,6 +148,10 @@ public class GamePanel extends JPanel implements Runnable{
         
         gameThread = new Thread(this);
         gameThread.start();
+    }
+    
+    public void setKeyH(KeyHandler keyH){
+        this.keyH = keyH;
     }
     
     @Override
@@ -132,26 +192,58 @@ public class GamePanel extends JPanel implements Runnable{
     
     public void update(){
         if(gameState == playState){
+            if(speaking){
+                speak();
+            }
             //update nhan vat
             player.update();
-            for(int i = 0; i < monster.length; i++){
-                if(monster[i] != null){
-                    if(monster[i].alive == true && monster[i].dying == false){
-                        monster[i].update();
+            for(int i = 0; i < npc[1].length; i++){
+                if(npc[currentMap][i] != null){
+                    npc[currentMap][i].update();
+                }
+            }
+            mission.updateMission(mission.indexMission);
+            if(mission.indexMission != -1 && mission.doing)mission.checkMission();
+            for(int i = 0; i < monster[1].length; i++){
+                if(monster[currentMap][i] != null){
+                    if(monster[currentMap][i].alive == true && monster[currentMap][i].dying == false){
+                        monster[currentMap][i].update();
                     }
-                    if(monster[i].alive == false){
-                        monster[i] = null;
+                    if(monster[currentMap][i].alive == false){
+                        countM[aSetter.typeMonster[currentMap][i]]++; // sua lai
+                        monster[currentMap][i] = null;
                     }
                 }
+                if(monsterR[currentMap][i] != null && monster[currentMap][i] == null){
+                    monsterR[currentMap][i].counterRevival--;
+                }
+                //Revival
+                if(monsterR[currentMap][i] != null && monsterR[currentMap][i].counterRevival <= 0){
+                    aSetter.resetMonster(currentMap, i, aSetter.typeMonster[currentMap][i]); // sua 
+                    monsterR[currentMap][i].counterRevival = monsterR[currentMap][i].timeRevival;   
+                }
+                
             }
             if(bullet != null) {
                 bullet.update();
                 if(bullet.worldX == bullet.limitX) bullet = null;
                 else if(bullet.touch) bullet = null;
             }
+            //update coin
+            for(OBJ_Coin i : coin){
+                if(i != null){
+                    i.update();
+                }
+            }
         }
         if(gameState == pauseState){
             //nothing
+        }
+        if(gameState == revivalState){
+            counterRevival--;
+            if(counterRevival <= 0){
+                revival();
+            }
         }
     }
     
@@ -161,20 +253,38 @@ public class GamePanel extends JPanel implements Runnable{
         
         Graphics2D g2 = (Graphics2D)g;
         if(gameState == titleState){
-            //ui.draw(g2);
+           ui.draw(g2);
         }
         else {
             //ve tile trc khi ve nhan vat
             tileM.draw(g2);
-            
-            //ve object
-            for(int i = 0; i < obj.length; i++){
-                if(obj[i] != null){
+            //ve NPC
+            for(int i = 0; i < npc[1].length; i++){
+                if(npc[currentMap][i] != null){
                     
-                    obj[i].draw(g2);            
+                    npc[currentMap][i].draw(g2);            
                 }
             }
-
+            //ve object
+            for(int i = 0; i < obj[1].length; i++){
+                if(obj[currentMap][i] != null){
+                    
+                    obj[currentMap][i].draw(g2);            
+                }
+            }
+            //ve chest
+            for(int i = 0; i < chest[1].length; i++){
+                if(chest[currentMap][i] != null){
+                    
+                    chest[currentMap][i].draw(g2);            
+                }
+            }
+            //ve coin
+            for(OBJ_Coin i : coin){
+                if(i != null){
+                    i.draw(g2);
+                }
+            }
             //ve nhan vat
             player.draw(g2);
 
@@ -184,9 +294,9 @@ public class GamePanel extends JPanel implements Runnable{
             }
 
             //ve monster
-            for(int i = 0; i < monster.length; i++){
-                if(monster[i] != null){
-                    monster[i].draw(g2);            
+            for(int i = 0; i < monster[1].length; i++){
+                if(monster[currentMap][i] != null){
+                    monster[currentMap][i].draw(g2);            
                 }
             }
             //ve UI
@@ -211,5 +321,14 @@ public class GamePanel extends JPanel implements Runnable{
         
         se.setFile(i);
         se.play();
+    }
+    
+    public void revival(){
+        gameState = playState;
+        coin.clear();
+        player.restore();
+        aSetter.setMonster();
+        timeRevival += 15 * 60;
+        counterRevival = timeRevival;
     }
 }
