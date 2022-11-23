@@ -44,7 +44,7 @@ public class PauseMenu extends Scene{
         this.add(checkMute);
         this.add(this.sfxSlider);
         this.add(this.musicSlider);
-        this.add(new EImage("assets/setting_back.jpg",alignmentCenter(this.getScreenWidth(), this.getScreenHeight())));
+        this.add(new EImage("bg/setting_back.jpg",alignmentCenter(this.getScreenWidth(), this.getScreenHeight())));
         this.setImage();
         this.addKeyListener(key);
         this.setFocusable(true);

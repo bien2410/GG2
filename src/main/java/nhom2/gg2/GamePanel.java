@@ -102,7 +102,7 @@ public class GamePanel extends Scene implements Runnable{
     public final int gameOverState = 7;
     public final int gameWinState = 8;
     private PauseMenu pause=new PauseMenu(keyH);
-    public GamePanel() throws IOException{
+    public GamePanel(){
         super();
         this.setPreferredSize(new Dimension(screenWidth, screenHeight)); //kich co cua GamePanel
         this.setSize(screenWidth, screenHeight);
@@ -116,7 +116,12 @@ public class GamePanel extends Scene implements Runnable{
         //this.setupGame();
         this.startGameThread();
         //this.requestFocusInWindow();
-        bg = ImageIO.read(getClass().getResourceAsStream("/res/background.png"));
+        try{
+            bg = ImageIO.read(getClass().getResourceAsStream("/res/background.png"));
+        }
+        catch(Exception e){
+            
+        }
     }
     
     public void setMonsterCounter(){

@@ -346,7 +346,6 @@ public class UI {
         switch (i) {
             case 0:
                 text = "Bạn đã mắc bẫy của ông Ôp - thực ra hắn ta là OOP kẻ đứng sau mọi chuyện!";
-                g2.drawString(text, getXforCenteredText(text), gp.tileSize * 10);
                 break;
             case 1:
                 text = "Bạn đã tái sinh, một phần cơ thể bạn đã ở lại thế giới này nên bạn không thể quay về thế giới thực!";
@@ -355,6 +354,10 @@ public class UI {
                 text = "Chúc mừng bạn đã phá đảo thể giới này, giờ thì quay trở lại code tiếp thôi!";
                 break;
         }
+        g2.drawString(text, getXforCenteredText(text), gp.tileSize * 10);
+        g2.setColor(Color.yellow);
+        text = "Ấn enter để trở về MainMenu";
+        g2.drawString(text, getXforCenteredText(text), gp.tileSize * 13);
     }
     
     public void drawInventory(){

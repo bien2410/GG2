@@ -57,6 +57,9 @@ public class KeyHandler implements KeyListener {
        else if(gp.gameState == gp.revivalState){
            revivalState(code);
        }
+       else if(gp.gameState == gp.gameLoseState || gp.gameState == gp.gameOverState || gp.gameState == gp.gameWinState){
+           endState(code);
+       }
     }
 
     @Override
@@ -87,6 +90,12 @@ public class KeyHandler implements KeyListener {
         }
         if(code == KeyEvent.VK_ENTER){
             enterPressed = false;
+        }
+    }
+    
+    public void endState(int code){
+        if(code == KeyEvent.VK_ENTER){
+            GG2.getInstance().enterMainMenu();
         }
     }
     

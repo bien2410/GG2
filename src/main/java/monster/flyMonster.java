@@ -118,10 +118,10 @@ public class flyMonster extends monster{
             g2.setColor(Color.white);
             g2.setFont(g2.getFont().deriveFont(10f));
             g2.drawString(name, screenX - 5, screenY - 30);
-            
+            /*
             g2.setColor(Color.red);
             g2.drawRect(screenX - gp.tileSize * 3, screenY - gp.tileSize * 2, gp.tileSize * 7, gp.tileSize * 4);
-           
+           */
         }
    
     }
