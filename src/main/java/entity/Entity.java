@@ -56,9 +56,10 @@ public class Entity {
     public int hpBarCounter = 0;*/
     
     //image
-    public BufferedImage jump1, jump2, left1, left2, right1, right2, down1, down2, up1, up2; // anh di chuyen
+    public BufferedImage jump1, jump2, left1, left2, left3, right1, right2, right3, down1, down2, up1, up2; // anh di chuyen
     public BufferedImage attackLeft, attackRight, shootLeft, shootRight; // anh tan cong
     public BufferedImage image; // anh object or tile,..
+    
     public ArrayList<BufferedImage> left,right,attLeft,attRight,jumpLeft,jumpRight; 
     
     public String direction = "right"; // huong quay mat
@@ -142,7 +143,7 @@ public class Entity {
             worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
             worldY < gp.player.worldY + (gp.screenHeight - gp.player.screenY)){
             
-           g2.drawImage(image, screenX, screenY, null);   
+            g2.drawImage(image, screenX, screenY, null);   
         }
     }
 }

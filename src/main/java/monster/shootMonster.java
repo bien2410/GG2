@@ -41,17 +41,15 @@ public class shootMonster extends monster {
         moveRange.y = y - gp.tileSize * 3;
         moveRange.width = gp.tileSize * 11;
         moveRange.height = gp.tileSize * 7;
-        
+        attImgNumb=-1;
+        dirImgNumb=1;
         getImage();
     }
     
-    public void getImage(){
-        image = setup("/monster/anh1", gp.tileSize, gp.tileSize);
-    }
-    
-    
     public void update(){
         int x, y;
+        if(gp.player.worldX < worldX) direction = "left";
+        else direction = "right";
         mode = gp.cChecker.detectPlayer(moveRange);
         counterAtk++;
         if(mode){
@@ -82,17 +80,13 @@ public class shootMonster extends monster {
                 invincibleCounter = 0;
             }
         }
-        checkDie();
     }
     
     public void draw(Graphics2D g2){
         if(mb != null){
             mb.draw(g2);
         }
-        BufferedImage image = this.image;
-        
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        super.draw(g2);
         
         if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
             worldX < gp.player.worldX + (gp.screenWidth - gp.player.screenX) &&
@@ -119,26 +113,10 @@ public class shootMonster extends monster {
             
             g2.setColor(Color.white);
             g2.setFont(g2.getFont().deriveFont(10f));
-            g2.drawString(name, screenX - 3, screenY - 30);
+            g2.drawString(name, screenX - 5, screenY - 30);
             
             g2.setColor(Color.red);
             g2.drawRect(screenX - gp.tileSize * 5, screenY - gp.tileSize * 3, gp.tileSize * 11, gp.tileSize * 7);
-            if(invincible){
-                hpBarOn = true;
-                hpBarCounter = 0;
-                if(invincibleAnimation == true){
-                    image = null;
-                    invincibleAnimation = false;
-                }
-                else{
-                    invincibleAnimation = true;
-                }
-            }
-            if(dying == true){
-                dyingAnimation(g2);
-            }
-           g2.drawImage(image, screenX, screenY, null);  
-           changeAlpha(g2, 1f);
         }
     }
 }

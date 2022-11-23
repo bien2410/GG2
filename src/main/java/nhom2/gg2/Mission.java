@@ -42,7 +42,7 @@ public class Mission {
         i++;
         taskMission[i] = "Tiêu diệt " + gp.countM[i] + "/10 Toán rời rạc";
         i++;
-        taskMission[i] = "Tiêu diệt " + gp.countM[i] + "/5 Cơ sở dữ liệu";
+        taskMission[i] = "Tiêu diệt " + gp.countM[i] + "/10 Cơ sở dữ liệu";
         i++;
         
     }
@@ -74,7 +74,7 @@ public class Mission {
                 taskMission[i] = "Tiêu diệt " + gp.countM[6] + "/10 Toán rời rạc";
                 break;
             case 8:
-                taskMission[i] = "Tiêu diệt " + gp.countM[8] + "/5 Cơ sở dữ liệu";
+                taskMission[i] = "Tiêu diệt " + gp.countM[8] + "/10 Cơ sở dữ liệu";
                 break;
             default:
                 return;
@@ -121,7 +121,7 @@ public class Mission {
                 break;
             case 8:
                 conservation.add("Làm tốt lắm đây là phần thưởng của ngươi\nCó vẻ ngươi cần thêm nhiều máu\nĐể ta giúp ngươi nốt lần này");
-                conservation.add("Tiêu diệt 5 Cơ sở dữ liệu");
+                conservation.add("Tiêu diệt 10 Cơ sở dữ liệu");
                 break;
             default:
                 gp.ui.currentDialogue = "Ông Ốp biến mất 1 cách lạ thường.\nĐến nơi tận cùng thế giới để tìm thử xem!";
@@ -149,55 +149,55 @@ public class Mission {
                 b = true;
                 break;
             case 0:
-                if(gp.countM[0] == 10) {
+                if(gp.countM[0] == 1) {
                     b = true;
                     checkMission[0] = true;
                 }
                 break;
             case 1:
-                if(gp.countM[1] == 10){
+                if(gp.countM[1] == 1){
                     b = true;
                     checkMission[1] = true;
                 }
                 break;
             case 2:
-                if(gp.countM[5] == 10){
+                if(gp.countM[5] == 1){
                     b = true;
                     checkMission[2] = true;
                 }
                 break;
             case 3:
-                if(gp.countM[2] == 10){
+                if(gp.countM[2] == 1){
                     b = true;
                     checkMission[3] = true;
                 }
                 break;
             case 4:
-                if(gp.countM[3] == 10){
+                if(gp.countM[3] == 1){
                     b = true;
                     checkMission[4] = true;
                 }
                 break;
             case 5:
-                if(gp.countM[7] == 10){
+                if(gp.countM[7] == 1){
                     b = true;
                     checkMission[5] = true;
                 }
                 break;
             case 6:
-                if(gp.countM[4] == 10){
+                if(gp.countM[4] == 1){
                     b = true;
                     checkMission[6] = true;
                 }
                 break;
             case 7:
-                if(gp.countM[6] == 10){
+                if(gp.countM[6] == 1){
                     b = true;
                     checkMission[7] = true;
                 }
                 break;
             case 8:
-                if(gp.countM[8] == 5){
+                if(gp.countM[8] == 1){
                     b = true;
                     checkMission[8] = true;
                 }

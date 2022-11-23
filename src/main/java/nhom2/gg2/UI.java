@@ -26,7 +26,7 @@ public class UI {
     public String currentMission = "";
     //public boolean gameFinished = false; luc day gameThread = null; 
     public String currentDialogue = "";
-    public String currentTitle = "Ấn phím TAB sau đó nhấn ENTER để bắt đầu";
+    public String currentTitle = "Nhấn ENTER để bắt đầu";
     //public int commandNum = 0;
     public int titleScreenState = 0;
     public int slotCol = 0;
@@ -134,6 +134,18 @@ public class UI {
         // revivalSTATE
         if(gp.gameState == gp.revivalState){
             drawRevivalScreen();
+        }
+        // LOSE
+        if(gp.gameState == gp.gameLoseState){
+            drawEndScreen(0);
+        }
+        // GAMEOVER
+        if(gp.gameState == gp.gameOverState){
+            drawEndScreen(1);
+        }
+        // WIN
+        if(gp.gameState == gp.gameWinState){
+            drawEndScreen(2);
         }
     }
     
@@ -302,17 +314,26 @@ public class UI {
         g2.drawString(text, x, y);
     }
     
-    public void drawGameOverScreen(){
+    public void drawEndScreen(int i){
         
         g2.setColor((new Color(0, 0, 0, 150)));
         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
         
         int x;
         int y;
-        String text;
+        String text = "";
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 110f));
-        
-        text = "Game Over";
+        switch (i) {
+            case 0:
+                text = "YOU LOSE";
+                break;
+            case 1:
+                text = "GAME OVER";
+                break;
+            case 2:
+                text = "YOU WIN";
+                break;
+        }
         //Shadow
         g2.setColor(Color.black);
         x = getXforCenteredText(text);
@@ -321,6 +342,19 @@ public class UI {
         //Main
         g2.setColor(Color.white);
         g2.drawString(text, x - 4, y - 4);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24f));
+        switch (i) {
+            case 0:
+                text = "Bạn đã mắc bẫy của ông Ôp - thực ra hắn ta là OOP kẻ đứng sau mọi chuyện!";
+                g2.drawString(text, getXforCenteredText(text), gp.tileSize * 10);
+                break;
+            case 1:
+                text = "Bạn đã tái sinh, một phần cơ thể bạn đã ở lại thế giới này nên bạn không thể quay về thế giới thực!";
+                break;
+            case 2:
+                text = "Chúc mừng bạn đã phá đảo thể giới này, giờ thì quay trở lại code tiếp thôi!";
+                break;
+        }
     }
     
     public void drawInventory(){

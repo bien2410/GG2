@@ -17,7 +17,7 @@ public class InfoMenu extends Scene {
         this.setTextColor(GameSetting.DF_TEXT_COLOR);
         this.add(new EButton("x",15, this.getTextColor(),alignmentTopRight(42,42,10,10),new CloseScene()));
         this.add(new EImage("Information", 50,this.getTextColor(), alignmentTopCenter(500,75)));
-        this.add(new EImage("<html>kira kira<br>          <html>", 20,this.getTextColor(), alignmentTopCenter(500,280,0,100)));
+        this.add(new EImage("<html>Phạm Trọng Biên<br>Vũ Huy Trường<br>Lê Văn Dũng<br>Phan Minh Tiến<br>Lưu Văn Hoàng Hiệp<br>          <html>", 20,this.getTextColor(), alignmentTopCenter(500,280,0,100)));
         this.add(new EImage("bg/info_back.jpg",alignmentCenter(this.getScreenWidth(), this.getScreenHeight())));
         this.setImage();
     }

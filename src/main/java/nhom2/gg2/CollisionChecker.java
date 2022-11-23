@@ -67,7 +67,7 @@ public class CollisionChecker {
                     boolean b = false;
                     int tmpi = 0;
                     for(int index = 0; index < gp.player.inventory.size(); index++){
-                        if(gp.player.inventory.get(index).name.equals("Key")) {
+                        if(gp.player.inventory.get(index).name.equals("Chìa khóa")) {
                             tmpi = index;
                             b = true;
                             break;
@@ -78,7 +78,7 @@ public class CollisionChecker {
                         if(gp.tileM.tile[tileNum1].name.equals("door")) gp.tileM.tile[tileNum1].collision = false;
                         if(gp.tileM.tile[tileNum2].name.equals("door")) gp.tileM.tile[tileNum2].collision = false;
                     }
-                    else gp.ui.addMessage("ban can chia khoa de mo cong");
+                    else gp.ui.addMessage("Bạn cần chìa khóa để mở cổng!");
                 }
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;

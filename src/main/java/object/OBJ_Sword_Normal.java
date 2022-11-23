@@ -20,7 +20,7 @@ public class OBJ_Sword_Normal extends Entity{
         type = type_weapon;
         name = "Kiếm gỉ";
         image = setup("/objects/sword_normal", gp.tileSize, gp.tileSize);
-        attackValue = 100;
+        attackValue = 1;
         attackArea.width = gp.tileSize * 2;
         attackArea.height = gp.tileSize * 2;
         description = "[" + name + "]\nĐồ cùi.";

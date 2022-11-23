@@ -46,6 +46,7 @@ public class TileManager {
             setup(4, "door", true);
             setup(5, "door", true);
             setup(6, "door1", false);
+            setup(7, "wall", true);
     }
     
     public void setup(int index, String imagePath, boolean collision){

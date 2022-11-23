@@ -32,6 +32,7 @@ public class Player extends Entity{
     
     public boolean hide = false;
     
+    public boolean running = false;
     //Jump
     boolean jumping = false;
     boolean falling = false;
@@ -41,10 +42,10 @@ public class Player extends Entity{
     
     //attack
     int attackNum = 0;
-    boolean attacking = false;
+    public boolean attacking = false;
     
     //shoot
-    boolean shooting = false;
+    public boolean shooting = false;
     boolean shootingAnimation = false;
     //image them
     public BufferedImage attackHighLeft, attackHighRight;
@@ -99,7 +100,7 @@ public class Player extends Entity{
     public void setDefaultValues(){
         //vi tri that su cua player tren map
         worldX = gp.tileSize * 8;
-        worldY = gp.tileSize * (gp.maxWorldRow - 6); // co 5 hang dat ben duoi
+        worldY = gp.tileSize * 44; // co 5 hang dat ben duoi
         
         speed = 5;
         maxHp = 100;
@@ -122,7 +123,6 @@ public class Player extends Entity{
         
         inventory.add(currentWeapon);
         inventory.add(currentShield);
-        //inventory.add(new OBJ_Shield_Blue(gp));
     }
     
     public int getAttack(){
@@ -141,9 +141,10 @@ public class Player extends Entity{
         jump2 = setup("/player/rightJump", gp.tileSize, gp.tileSize);
         left1 = setup("/player/left", gp.tileSize, gp.tileSize);
         left2 = setup("/player/leftMove", gp.tileSize, gp.tileSize);
+        left3 = setup("/player/leftMove2", gp.tileSize, gp.tileSize);
         right1 = setup("/player/right", gp.tileSize, gp.tileSize);
         right2 = setup("/player/rightMove", gp.tileSize, gp.tileSize);
-       
+        right3 = setup("/player/rightMove2", gp.tileSize, gp.tileSize);
     }
     public void getPlayerAttackImage(){
         
@@ -175,6 +176,18 @@ public class Player extends Entity{
     // thao tac cua nhan vat
     public void update(){
         
+        if(gp.currentMap == 2 && worldX >= 11 * gp.tileSize && worldY >= 37 * gp.tileSize){
+            gp.tileM.loadMap("/res/maps/map31.txt", 2);
+            
+        }
+        if(gp.currentMap == 4 && worldX >= 5 * gp.tileSize && worldY <= 16 * gp.tileSize){
+            gp.tileM.loadMap("/res/maps/map52.txt", 4);
+        }
+        if(gp.monster[4][0] != null && gp.monster[4][0].alive == false){
+            gp.tileM.loadMap("/res/maps/map51.txt", 4);
+            gp.npc[4][2] = null;
+            gp.aSetter.setEnd(2);
+        }
         if(worldX >= gp.tileSize * 48 && gp.currentMap < 4){
             teleport(1);
         }
@@ -238,16 +251,16 @@ public class Player extends Entity{
         //invinvible
         if(invincible == true){
             invincibleCounter++;
-            if(invincibleCounter > 30){ // sua lai o day
+            if(invincibleCounter > 60){ // sua lai o day
                 invincible = false;
                 invincibleCounter = 0;
             }
         }
         
-        spriteNum = 1;
-        if((keyH.leftPressed == true || keyH.rightPressed == true) && !attacking && !invincible){ // hoat anh chi doi khi di chuyen
+        running = false;
+        if((keyH.leftPressed == true || keyH.rightPressed == true) && !attacking){ // hoat anh chi doi khi di chuyen, h co the di chuyen khi invincible
             shootingAnimation = false;
-            spriteNum = 2;
+            running = true;
             if(keyH.leftPressed == true){
                 direction = "left";
                 
@@ -276,7 +289,7 @@ public class Player extends Entity{
 
             }
 
-            /*spriteCounter++;
+            spriteCounter++;
             if(spriteCounter > 10){ //cu 10/FPS s thay doi hoat anh 1 lan 
                 if(spriteNum == 1){
                     spriteNum = 2;
@@ -285,7 +298,7 @@ public class Player extends Entity{
                     spriteNum = 1;
                 }
                 spriteCounter = 0;
-            }*/
+            }
         }
         
         if(keyH.upPressed == true && !invincible && !attacking){
@@ -372,6 +385,10 @@ public class Player extends Entity{
             worldX = DFx1;
             worldY = DFy[gp.currentMap] * gp.tileSize;
         }
+        if(gp.currentMap == 4) {
+            gp.aSetter.setBoss();
+            gp.aSetter.setEnd(1);
+        }
     }
     
     public void manaRecover(){
@@ -441,6 +458,14 @@ public class Player extends Entity{
             }
             else{
                 gp.ui.addMessage("Bạn không đủ tiền");
+            }
+        }
+        if(i == 2){
+            if(gp.timeRevival <= 15 * 60){
+                gp.gameState = gp.gameWinState;
+            }
+            else {
+                gp.gameState = gp.gameOverState;
             }
         }
     }
@@ -525,9 +550,13 @@ public class Player extends Entity{
     }
     
     public void openChest(int i){
-        if(i != 999 && keyH.enterPressed == true){
+        if(i != 999 && keyH.enterPressed == true && gp.currentMap != 4){
             keyH.enterPressed = false;
             if(gp.chest[gp.currentMap][i].hp > 0) gp.chest[gp.currentMap][i].open();
+        }
+        if(i != 999 && keyH.enterPressed == true && gp.currentMap == 4){
+            keyH.enterPressed = false;
+            if(gp.chest[gp.currentMap][i].hp > 0) gp.chest[gp.currentMap][i].openBomb();
         }
     }
     
@@ -698,23 +727,29 @@ public class Player extends Entity{
         int iny = screenY;
         if(!attacking){
             if(!jumping){
-                switch(direction){
-                    case"left":
-                        if(spriteNum == 1){
-                            image = left1;
-                        }
-                        if(spriteNum == 2){
-                            image = left2;
-                        }
-                        break;
-                    case"right":
-                        if(spriteNum == 1){
-                            image = right1;
-                        }
-                        if(spriteNum == 2){
-                            image = right2;
-                        }
-                        break;
+                if(!running){
+                    if(direction.equals("left")) image = left1;
+                    if(direction.equals("right")) image = right1;
+                }
+                else{
+                    switch(direction){
+                        case"left":
+                            if(spriteNum == 1){
+                                image = left2;
+                            }
+                            if(spriteNum == 2){
+                                image = left3;
+                            }
+                            break;
+                        case"right":
+                            if(spriteNum == 1){
+                                image = right2;
+                            }
+                            if(spriteNum == 2){
+                                image = right3;
+                            }
+                            break;
+                    }
                 }
             }
             else{
@@ -795,7 +830,7 @@ public class Player extends Entity{
                 invincibleAnimation = true;
             }
         }
-        if(hide) image = null;
+        //if(hide) image = null;
         g2.drawImage(image, inx, iny, null);
         /*g2.setColor(Color.red);
         g2.drawRect(cam.x, cam.y, cam.width, cam.height);*/

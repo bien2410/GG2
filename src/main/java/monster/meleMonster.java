@@ -35,14 +35,10 @@ public class meleMonster extends monster {
         //bien de check collision xong chuyen ve
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        
+        attImgNumb=6;
+        dirImgNumb=4;
         getImage();
     }
-    
-    public void getImage(){
-        image = setup("/monster/anh1", gp.tileSize, gp.tileSize);
-    }
-    
     
     public void update(){
         if(invincible == false){
@@ -52,7 +48,10 @@ public class meleMonster extends monster {
             else{
                 direction = "left";
             }
-            if(mode) attacking();
+            if(mode) {
+                attacking();
+                direction = "";
+            }
         }
         if(invincible == true){
             invincibleCounter++;
@@ -61,15 +60,10 @@ public class meleMonster extends monster {
                 invincibleCounter = 0;
             }
         }
-        checkDie();
     }
     
     public void draw(Graphics2D g2){
-        
-        BufferedImage image = this.image;
-        
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        super.draw(g2);
         
         if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
             worldX < gp.player.worldX + (gp.screenWidth - gp.player.screenX) &&
@@ -96,9 +90,9 @@ public class meleMonster extends monster {
             
             g2.setColor(Color.white);
             g2.setFont(g2.getFont().deriveFont(10f));
-            g2.drawString(name, screenX + 8, screenY - 30);
+            g2.drawString(name, screenX - 5, screenY - 30);
             
-            g2.setColor(Color.red);
+            /*g2.setColor(Color.red);
             if(checkAttack){
                 if("right".equals(atkDirection)){
                     g2.drawRect(screenX + gp.tileSize, screenY, gp.tileSize, gp.tileSize);
@@ -106,23 +100,7 @@ public class meleMonster extends monster {
                 if("left".equals(atkDirection)){
                     g2.drawRect(screenX - gp.tileSize, screenY, gp.tileSize, gp.tileSize);
                 }
-            }
-            if(invincible){
-                hpBarOn = true;
-                hpBarCounter = 0;
-                if(invincibleAnimation == true){
-                    image = null;
-                    invincibleAnimation = false;
-                }
-                else{
-                    invincibleAnimation = true;
-                }
-            }
-            if(dying == true){
-                dyingAnimation(g2);
-            }
-           g2.drawImage(image, screenX, screenY, null);  
-           changeAlpha(g2, 1f);
+            }*/
         }
     }
 }

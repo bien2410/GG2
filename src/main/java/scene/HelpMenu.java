@@ -21,6 +21,7 @@ public class HelpMenu extends Scene{
         this.add(new EButton(">",15, this.getTextColor(),alignmentRightCenter(45,75),null));
         this.add(new EButton("<",15, this.getTextColor(),alignmentLeftCenter(45,75),null));
         this.add(new EImage("Help", 50,this.getTextColor(), alignmentTopCenter(500,75)));
+         this.add(new EImage("<html>Ấn PLAYGAME và tìm hiểu nhé<br>          <html>", 20,this.getTextColor(), alignmentTopCenter(500,280,0,100)));
         this.add(new EImage("bg/help_back.jpg",alignmentCenter(this.getScreenWidth(), this.getScreenHeight())));
         this.setImage();
     }

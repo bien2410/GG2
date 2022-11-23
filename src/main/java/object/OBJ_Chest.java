@@ -24,7 +24,14 @@ public class OBJ_Chest extends Entity{
     public void open(){
         hp = 0;
         image = setup("/objects/chest_opened", gp.tileSize, gp.tileSize);
-        gp.aSetter.setCoin(worldX, worldY, 1000);
         gp.aSetter.setItem(worldX, worldY, z);
+    }
+    
+    public void openBomb(){
+        hp = 0;
+        image = setup("/objects/bum", gp.tileSize, gp.tileSize);
+        gp.player.hp = 1;
+        
+        gp.gameState = gp.gameLoseState;
     }
 }

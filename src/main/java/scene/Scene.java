@@ -13,10 +13,10 @@ import javax.swing.*;
 import java.util.*;
 import nhom2.gg2.*;
 public abstract class Scene extends JComponent {
-    private int screenWidth;
-    private int screenHeight;
-    private int pos_x;
-    private int pos_y;
+    protected int screenWidth;
+    protected int screenHeight;
+    protected int pos_x;
+    protected int pos_y;
     private float size = 1;
     private Color textcolor = Color.black;
     private boolean animated;

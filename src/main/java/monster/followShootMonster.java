@@ -25,7 +25,7 @@ public class followShootMonster extends monster {
         attack = 10;
         defense = 1;
         exp = 5;
-        
+        dirImgNumb=1;
         atkSpeed = gp.FPS; // phai lon hon range
         attackArea.width = gp.tileSize;
         solidArea.x = 3;
@@ -45,13 +45,10 @@ public class followShootMonster extends monster {
         getImage();
     }
     
-    public void getImage(){
-        image = setup("/monster/anh1", gp.tileSize, gp.tileSize);
-    }
-    
-    
     public void update(){
         int x, y;
+        if(gp.player.worldX < worldX) direction = "left";
+        else direction = "right";
         mode = gp.cChecker.detectPlayer(moveRange);
         counterAtk++;
         if(mode){
@@ -85,18 +82,13 @@ public class followShootMonster extends monster {
                 invincibleCounter = 0;
             }
         }
-        checkDie();
     }
     
     public void draw(Graphics2D g2){
         if(fb != null){
             fb.draw(g2);
         }
-        BufferedImage image = this.image;
-        
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
-        
+        super.draw(g2);
         if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
             worldX < gp.player.worldX + (gp.screenWidth - gp.player.screenX) &&
             worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
@@ -122,26 +114,10 @@ public class followShootMonster extends monster {
             
             g2.setColor(Color.white);
             g2.setFont(g2.getFont().deriveFont(10f));
-            g2.drawString(name, screenX - 7, screenY - 30);
+            g2.drawString(name, screenX - 5, screenY - 30);
             
             g2.setColor(Color.red);
             g2.drawRect(screenX - gp.tileSize * 5, screenY - gp.tileSize * 3, gp.tileSize * 11, gp.tileSize * 4);
-            if(invincible){
-                hpBarOn = true;
-                hpBarCounter = 0;
-                if(invincibleAnimation == true){
-                    image = null;
-                    invincibleAnimation = false;
-                }
-                else{
-                    invincibleAnimation = true;
-                }
-            }
-            if(dying == true){
-                dyingAnimation(g2);
-            }
-           g2.drawImage(image, screenX, screenY, null);  
-           changeAlpha(g2, 1f);
         }
     }
 }

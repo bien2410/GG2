@@ -11,8 +11,8 @@ package nhom2.gg2;
 import java.awt.*;
 public class GameSetting {
     private GameSetting(){}
-    public static final int SCREEN_WIDTH=1152;
-    public static final int SCREEN_HEIGHT=768;
+    public static final int SCREEN_WIDTH=1920 / 2;
+    public static final int SCREEN_HEIGHT=1080 / 2;
     public static final Color DF_COLOR=Color.BLACK;
     public static final Color DF_TEXT_COLOR=Color.WHITE;
     public static final Color HP_LOST=Color.GRAY;

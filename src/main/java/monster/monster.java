@@ -11,6 +11,7 @@ package monster;
 import bullet.*;
 import entity.*;
 import java.awt.*;
+import java.awt.image.*;
 import java.util.*;
 import nhom2.gg2.GamePanel;
 public class monster extends Entity{
@@ -23,6 +24,7 @@ public class monster extends Entity{
     public int dfX;
     public int dfY;
     public int atkSpeed;
+    public String oldDirection = "";
     public String atkDirection = "";
     public String atkDirection2 = "";
     public boolean mode = false;
@@ -34,6 +36,13 @@ public class monster extends Entity{
     public int counterRevival = timeRevival;
     public monsterBullet mb;
     public followBullet fb;
+    //Truong
+    protected BufferedImage image;
+    protected int screenX;
+    protected int screenY;
+    protected int attImgNumb=-1;
+    protected int dirImgNumb=-1;
+    
     public monster(GamePanel gp, int x, int y) {
         super(gp);
         dfX = x;
@@ -47,6 +56,62 @@ public class monster extends Entity{
         moveRange.height = gp.tileSize * 3;
         
     }
+    //truong
+    public void getImage(){
+        //String path=name.replaceAll(" ", "");
+        String path = name;
+        left=new ArrayList<>();
+        right=new ArrayList<>();
+        attLeft=new ArrayList<>();
+        attRight=new ArrayList<>();
+        for(int i=1;i<=dirImgNumb;i++) {
+            left.add(setup("/monster/"+path+"/LW_"+i, gp.tileSize *3, gp.tileSize*3));
+            right.add(setup("/monster/"+path+"/RW_"+i, gp.tileSize *3, gp.tileSize*3));
+        }  
+        for(int i=1;i<=attImgNumb;i++) {
+            attLeft.add(setup("/monster/"+path+"/LA_"+i, gp.tileSize *3, gp.tileSize*3));
+            attRight.add(setup("/monster/"+path+"/RA_"+i, gp.tileSize *3, gp.tileSize*3));
+        }
+    }
+    
+    public void draw(Graphics2D g2){
+        screenX = worldX - gp.player.worldX + gp.player.screenX;
+        screenY = worldY - gp.player.worldY + gp.player.screenY;
+        image=null;
+        spriteCounter++;
+        if(spriteCounter>=10000) spriteCounter=0;
+        try{
+            switch (direction){
+                case "left":
+                    image=left.get(spriteCounter/20%left.size());
+                    break;
+                case "right" :
+                    image=right.get(spriteCounter/20%right.size());
+                    break;
+                case "":
+                    if(gp.player.worldX<worldX) image=attLeft.get(spriteCounter/20%attLeft.size());
+                    else image=attRight.get(spriteCounter/20%attRight.size());
+            }
+        } catch (Exception e){}
+        if(invincible){
+            hpBarOn = true;
+            hpBarCounter = 0;
+            if(invincibleAnimation == true){
+                image = null;
+                invincibleAnimation = false;
+            }
+            else{
+                invincibleAnimation = true;
+            }
+        }
+        if(dying == true){
+            dyingAnimation(g2);
+        }
+       g2.drawImage(image, screenX-gp.tileSize, screenY-gp.tileSize-10, null);  
+       changeAlpha(g2, 1f);
+    }
+    
+    
     
     public void updateMoveRange(){
         moveRange.x = worldX - gp.tileSize * 3;
@@ -111,7 +176,10 @@ public class monster extends Entity{
         speed = 3;
         if(worldX + gp.tileSize - 20 < gp.player.worldX) direction = "right";
         else if(worldX - gp.tileSize + 20 > gp.player.worldX) direction = "left";
-        else direction = "";
+        else {
+            oldDirection = direction;
+            direction = "";
+        }
     }
     
     public void attacking(){

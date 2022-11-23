@@ -68,10 +68,44 @@ public class AssetSetter {
         gp.chest[mapNum][i].worldY = 44 * gp.tileSize;
         i++;
         mapNum = 1;
+        i = 0;
+        mapNum = 2;
+        i = 0;
+        gp.chest[mapNum][i] = new OBJ_Chest(gp, 3);
+        gp.chest[mapNum][i].worldX = 14 * gp.tileSize;
+        gp.chest[mapNum][i].worldY = 40 * gp.tileSize;
+        i++;
+        mapNum = 3;
+        i = 0;
+        gp.chest[mapNum][i] = new OBJ_Chest(gp, 4);
+        gp.chest[mapNum][i].worldX = 4 * gp.tileSize;
+        gp.chest[mapNum][i].worldY = 14 * gp.tileSize;
+    }
+    
+    public void setBoss(){
+        gp.monster[4][0] = new BOSS(gp, 40 * gp.tileSize, 43 * gp.tileSize);
+    }
+    
+    public void setEnd(int i){
+        if(i == 1){
+            gp.npc[4][2] = new NPCE(gp);
+            gp.npc[4][2].name = "OOP";
+            gp.npc[4][2].worldX = 46 * gp.tileSize;
+            gp.npc[4][2].worldY = 20 * gp.tileSize;
+        }
+        else{
+            gp.chest[4][0] = new OBJ_Chest(gp, 0);
+            gp.chest[4][0].worldX = 47 * gp.tileSize;
+            gp.chest[4][0].worldY = 20 * gp.tileSize;
+        }
     }
     
     public void setMonster(){
-        
+        /*monsterX[0][0] = 4 * gp.tileSize;
+        monsterY[0][0] = 44 * gp.tileSize;
+        typeMonster[0][0] = 5;
+        resetMonster(0, 0, typeMonster[0][0]);
+        setMonsterR(0, 0, typeMonster[0][0]);*/
         int mapNum = 1;
         int i = 0;
         monsterX[mapNum][i] = 7 * gp.tileSize;
@@ -254,8 +288,8 @@ public class AssetSetter {
         resetMonster(mapNum, i, typeMonster[mapNum][i]);
         setMonsterR(mapNum, i, typeMonster[mapNum][i]);
         i++;
-        monsterX[mapNum][i] = 36 * gp.tileSize;
-        monsterY[mapNum][i] = 37 * gp.tileSize;
+        monsterX[mapNum][i] = 37 * gp.tileSize;
+        monsterY[mapNum][i] = 36 * gp.tileSize;
         typeMonster[mapNum][i] = 6;
         resetMonster(mapNum, i, typeMonster[mapNum][i]);
         setMonsterR(mapNum, i, typeMonster[mapNum][i]);
@@ -380,6 +414,12 @@ public class AssetSetter {
                 break;
             case 2:
                 item = new OBJ_Shield_Blue(gp);
+                break;
+            case 3:
+                item = new OBJ_VIP_Sword(gp);
+                break;
+            case 4:
+                item = new OBJ_VIP_Shield(gp);
                 break;
             default:
                 break;

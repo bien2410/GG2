@@ -12,13 +12,18 @@ package nhom2.gg2;
 import bullet.*;
 import entity.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.*;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import monster.*;
 import object.*;
+import scene.*;
 import tile.*;
-public class GamePanel extends JPanel implements Runnable{
-    
+public class GamePanel extends Scene implements Runnable{
+    public BufferedImage bg = null;
+     
     // cai dat man hinh
     final int originalTileSize = 16; // anh se la 16 pixels * 16 pixels
     final int scale = 3; // chi so phong to hinh anh khi vao game
@@ -36,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable{
     public final int maxWorldRow = 50;
    
     public int maxMap = 10;
-    public int currentMap = 3;
+    public int currentMap = 0;
     //FPS 
     public int FPS = 60;
     
@@ -93,14 +98,17 @@ public class GamePanel extends JPanel implements Runnable{
     public final int dialogueState = 3;
     public final int characterState = 4;
     public final int revivalState = 5;
-    public final int gameOverState = 6;
-    public GamePanel(){
-        
-        //this.setPreferredSize(new Dimension(screenWidth, screenHeight)); //kich co cua GamePanel
+    public final int gameLoseState = 6;
+    public final int gameOverState = 7;
+    public final int gameWinState = 8;
+    private PauseMenu pause=new PauseMenu(keyH);
+    public GamePanel() throws IOException{
+        super();
+        this.setPreferredSize(new Dimension(screenWidth, screenHeight)); //kich co cua GamePanel
         this.setSize(screenWidth, screenHeight);
         this.setBackground(Color.black); // mau cua nen 
         this.setDoubleBuffered(true); // cho phep su dung phuong thuc draw...
-        setText();
+        setText(0);
         setMonsterCounter();
         // dau vao tu ban phim
         this.addKeyListener(keyH); 
@@ -108,20 +116,32 @@ public class GamePanel extends JPanel implements Runnable{
         //this.setupGame();
         this.startGameThread();
         //this.requestFocusInWindow();
+        bg = ImageIO.read(getClass().getResourceAsStream("/res/background.png"));
     }
     
     public void setMonsterCounter(){
         for(int i = 0; i < 9; i++) countM[i] = 0;
     }
     
-    public void setText(){
-        tit.add(".......................");
-        tit.add("Đây là ai tôi là đâu?. Chuyện gì đang xảy ra thế này");
-        tit.add("Mình nhớ là đang code PTIT đến phút thứ 181 mà");
-        dia.add("Mình ngủ thiếp đi và rồi ......");
-        dia.add("Đằng kia có 1 ông lão đến hỏi thử xem nào");
-        dia.add("Ấn A, D để di chuyển trái phải. W để nhảy\nẤn ENTER để tương tác với các vật thể và đối thoại");
-        dia.add("Giờ thì đi tìm ông Ôp nào");
+    public void setText(int i){
+        if(i == 0){
+            tit.add(".......................");
+            tit.add("Đây là ai tôi là đâu?. Chuyện gì đang xảy ra thế này");
+            tit.add("Mình nhớ là đang code PTIT đến phút thứ 181 mà");
+            dia.add("Mình ngủ thiếp đi và rồi ......");
+            dia.add("Đằng kia có 1 ông lão đến hỏi thử xem nào");
+            dia.add("Ấn A, D để di chuyển trái phải. W để nhảy\nẤn ENTER để tương tác với các vật thể và đối thoại");
+            dia.add("Giờ thì đi tìm ông Ôp nào");
+        }
+        if(i == 1){
+            tit.add("You Lose");
+        }
+        if(i == 2){
+            tit.add("You Over");
+        }
+        if(i == 3){
+            tit.add("You Win");
+        }
     }
     
     public void speak(){
@@ -154,6 +174,12 @@ public class GamePanel extends JPanel implements Runnable{
         this.keyH = keyH;
     }
     
+    public void pause(){
+        pause.disable(!pause.isDisable());
+        if(!pause.isDisable())GG2.getInstance().enterScene(pause);
+        else GG2.getInstance().closeScene();
+    }
+    
     @Override
     // vong lap game
     public void run() {
@@ -173,12 +199,14 @@ public class GamePanel extends JPanel implements Runnable{
             lastTime = currentTime;
         
             if(delta >= 1){
-                update();
-            
-                repaint();
-                
+                if(pause.isDisable()){
+                    update();
+
+                    repaint();
+                }
                 delta--;
                 //drawCount++;
+                
             }
             // print FPS
             /*if(timer >= 1000000000){
@@ -248,7 +276,9 @@ public class GamePanel extends JPanel implements Runnable{
     }
     
     public void paintComponent(Graphics g){ // subclass of JPanel
-        
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, screenWidth, screenHeight);
+        g.drawImage(bg, 0, 0, screenWidth, screenHeight, null);
         super.paintComponent(g);
         
         Graphics2D g2 = (Graphics2D)g;
