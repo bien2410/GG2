@@ -68,7 +68,7 @@ public class GG2 {
         window.pack();
         window.setLocationRelativeTo(null);
     }
-    public void enterMainGame() throws IOException {
+    public void enterMainGame(){
         window.getContentPane().removeAll();
         this.enterScene(new GamePanel());
         window.pack();
