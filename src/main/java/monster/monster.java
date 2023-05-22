@@ -32,7 +32,7 @@ public class monster extends Entity{
     public boolean checkAttack = false;
     public int counterAtk = 0;
     public Rectangle moveRange = new Rectangle();
-    public int timeRevival = 10 * gp.FPS;
+    public int timeRevival = 5 * gp.FPS;
     public int counterRevival = timeRevival;
     public monsterBullet mb;
     public followBullet fb;

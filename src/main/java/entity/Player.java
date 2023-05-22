@@ -830,7 +830,7 @@ public class Player extends Entity{
                 invincibleAnimation = true;
             }
         }
-        //if(hide) image = null;
+        if(hide) image = null;
         g2.drawImage(image, inx, iny, null);
         /*g2.setColor(Color.red);
         g2.drawRect(cam.x, cam.y, cam.width, cam.height);*/

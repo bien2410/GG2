@@ -117,11 +117,9 @@ public class GamePanel extends Scene implements Runnable{
         this.startGameThread();
         //this.requestFocusInWindow();
         try{
-<<<<<<< HEAD
+
             bg = ImageIO.read(getClass().getResourceAsStream("/res/background.png"));
-=======
-        bg = ImageIO.read(getClass().getResourceAsStream("/res/background.png"));
->>>>>>> 371b72d2f305e77f3b3c7198b81bc947beea3f81
+
         }
         catch(Exception e){
             
